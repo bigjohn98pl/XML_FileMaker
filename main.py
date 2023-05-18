@@ -15,99 +15,106 @@ pygame.display.set_caption("XML Block Editor")
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 
-# List to store the blocks
-blocks = []
-
 # Button parameters
 BUTTON_WIDTH = 100
 BUTTON_HEIGHT = 30
 BUTTON_COLOR = (100, 100, 100)
 BUTTON_TEXT_COLOR = WHITE
 
-# Create the "Save" button
-save_button_rect = pygame.Rect(
-    WINDOW_WIDTH - BUTTON_WIDTH - 10,
-    WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT
-)
 
-# Create the "Toggle Shape" button
-toggle_button_rect = pygame.Rect(
-    WINDOW_WIDTH - BUTTON_WIDTH - 10,
-    WINDOW_HEIGHT - BUTTON_HEIGHT * 2 - 20,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT
-)
-is_rectangle = True
+class Block:
+    def __init__(self, shape, params=None):
+        self.id = str(uuid.uuid4())
+        self.shape = shape
+        self.params = params or {}
 
-# Game loop
-running = True
-while running:
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
-                if save_button_rect.collidepoint(event.pos):
-                    # Generate and save the XML file
-                    root = ET.Element("root")
-                    for block in blocks:
-                        block_elem = ET.SubElement(root, "block")
-                        block_elem.set("id", block["id"])  # Set the ID attribute
-                        for param_name, param_value in block["params"].items():
-                            block_elem.set(param_name, param_value)
-                    xml_tree = ET.ElementTree(root)
-                    xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
-                    print("XML file saved!")
-                elif toggle_button_rect.collidepoint(event.pos):
-                    # Toggle between rectangle and circle shapes
-                    is_rectangle = not is_rectangle
-                else:
-                    # Create a new block at the mouse position with a unique ID
-                    block_shape = pygame.Rect(event.pos[0], event.pos[1], 100, 50) if is_rectangle else pygame.Rect(
-                        event.pos[0], event.pos[1], 50, 50)
-                    block = {
-                        "id": str(uuid.uuid4()),  # Generate a unique ID
-                        "shape": block_shape,
-                        "params": {}
-                    }
-                    blocks.append(block)
 
-    # Update block positions
-    for block in blocks:
-        if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
-            if block["shape"].collidepoint(pygame.mouse.get_pos()):
-                # Move the block with the mouse cursor
-                block["shape"].center = pygame.mouse.get_pos()
+class Game:
+    def __init__(self):
+        self.blocks = []
+        self.is_rectangle = True
+        self.save_button_rect = pygame.Rect(
+            WINDOW_WIDTH - BUTTON_WIDTH - 10,
+            WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT
+        )
+        self.toggle_button_rect = pygame.Rect(
+            WINDOW_WIDTH - BUTTON_WIDTH - 10,
+            WINDOW_HEIGHT - BUTTON_HEIGHT * 2 - 20,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT
+        )
 
-    # Clear the window
-    window.fill(BLACK)
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button
+                        if self.save_button_rect.collidepoint(event.pos):
+                            self.save_xml()
+                        elif self.toggle_button_rect.collidepoint(event.pos):
+                            self.toggle_shape()
+                        else:
+                            self.create_block(event.pos)
 
-    # Draw the blocks
-    for block in blocks:
-        if is_rectangle:
-            pygame.draw.rect(window, WHITE, block["shape"])
-        else:
-            pygame.draw.ellipse(window, WHITE, block["shape"])
+            self.update_blocks()
+            self.draw_window()
 
-    # Draw the "Save" button
-    pygame.draw.rect(window, BUTTON_COLOR, save_button_rect)
-    save_font = pygame.font.Font(None, 24)
-    save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
-    save_text_rect = save_text.get_rect(center=save_button_rect.center)
-    window.blit(save_text, save_text_rect)
+        pygame.quit()
 
-    # Draw the "Toggle Shape" button
-    pygame.draw.rect(window, BUTTON_COLOR, toggle_button_rect)
-    toggle_font = pygame.font.Font(None, 24)
-    toggle_text = toggle_font.render("Toggle", True, BUTTON_TEXT_COLOR)
-    toggle_text_rect = toggle_text.get_rect(center=toggle_button_rect.center)
-    window.blit(toggle_text, toggle_text_rect)
+    def save_xml(self):
+        root = ET.Element("root")
+        for block in self.blocks:
+            block_elem = ET.SubElement(root, "block")
+            block_elem.set("id", block.id)
+            for param_name, param_value in block.params.items():
+                block_elem.set(param_name, param_value)
+        xml_tree = ET.ElementTree(root)
+        xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
+        print("XML file saved!")
 
-    # Update the display
-    pygame.display.flip()
+    def toggle_shape(self):
+        self.is_rectangle = not self.is_rectangle
 
-# Quit the game
-pygame.quit()
+    def create_block(self, pos):
+        shape = pygame.Rect(pos[0], pos[1], 100, 50) if self.is_rectangle else pygame.Rect(pos[0], pos[1], 50, 50)
+        block = Block(shape)
+        self.blocks.append(block)
+
+    def update_blocks(self):
+        for block in self.blocks:
+            if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
+                if block.shape.collidepoint(pygame.mouse.get_pos()):
+                    block.shape.center = pygame.mouse.get_pos()
+
+    def draw_window(self):
+        window.fill(BLACK)
+
+        for block in self.blocks:
+            if self.is_rectangle:
+                pygame.draw.rect(window, WHITE, block.shape)
+            else:
+                pygame.draw.ellipse(window, WHITE, block.shape)
+
+        pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
+        save_font = pygame.font.Font(None, 24)
+        save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
+        save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
+        window.blit(save_text, save_text_rect)
+
+        pygame.draw.rect(window, BUTTON_COLOR, self.toggle_button_rect)
+        toggle_font = pygame.font.Font(None, 24)
+        toggle_text = toggle_font.render("Toggle", True, BUTTON_TEXT_COLOR)
+        toggle_text_rect = toggle_text.get_rect(center=self.toggle_button_rect.center)
+        window.blit(toggle_text, toggle_text_rect)
+
+        pygame.display.flip()
+
+
+# Create the game object and run the game
+game = Game()
+game.run()
