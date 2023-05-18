@@ -23,10 +23,15 @@ BUTTON_TEXT_COLOR = WHITE
 
 
 class Block:
-    def __init__(self, shape, params=None):
-        self.id = str(uuid.uuid4())
+    count = 0  # Class variable to keep track of the block count
+
+    def __init__(self, name, shape, params=None):
+        self.name = name
+        self.number = Block.count + 1
+        self.id = f"{self.name}_{self.number}"
         self.shape = shape
         self.params = params or {}
+        Block.count += 1
 
 
 class Game:
@@ -59,7 +64,7 @@ class Game:
                         elif self.toggle_button_rect.collidepoint(event.pos):
                             self.toggle_shape()
                         else:
-                            self.create_block(event.pos)
+                            self.create_block("block",event.pos)
 
             self.update_blocks()
             self.draw_window()
@@ -80,9 +85,9 @@ class Game:
     def toggle_shape(self):
         self.is_rectangle = not self.is_rectangle
 
-    def create_block(self, pos):
+    def create_block(self, name, pos):
         shape = pygame.Rect(pos[0], pos[1], 100, 50) if self.is_rectangle else pygame.Rect(pos[0], pos[1], 50, 50)
-        block = Block(shape)
+        block = Block(name, shape)
         self.blocks.append(block)
 
     def update_blocks(self):

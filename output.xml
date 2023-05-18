@@ -1,2 +1,7 @@
 <?xml version='1.0' encoding='utf-8'?>
-<root><block id="d16ab345-c1e3-48b1-9624-96dfd34d960f" /><block id="5becdad4-3d22-4fcd-a4eb-0712899d7e04" /><block id="7fe318a5-d79d-4b50-8894-3a43aa5dd1fd" /><block id="e678259b-833c-4029-88ad-d7a25c5375d1" /></root>
+<root>
+    <block id="block_1" />
+    <block id="block_2" />
+    <block id="block_3" />
+    <block id="block_4" />
+</root>
