@@ -24,67 +24,105 @@ BUTTON_HEIGHT = 30
 BUTTON_COLOR = (100, 100, 100)
 BUTTON_TEXT_COLOR = WHITE
 
-# Create the "Save" button
-save_button_rect = pygame.Rect(
-    WINDOW_WIDTH - BUTTON_WIDTH - 10,
-    WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
-    BUTTON_WIDTH,
-    BUTTON_HEIGHT
-)
 
-# Game loop
-running = True
-while running:
-    # Handle events
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            running = False
-        elif event.type == pygame.MOUSEBUTTONDOWN:
-            if event.button == 1:  # Left mouse button
-                if save_button_rect.collidepoint(event.pos):
-                    # Generate and save the XML file
-                    root = ET.Element("root")
-                    for block in blocks:
-                        block_elem = ET.SubElement(root, "rect_",block["params"])
-                        for param_name, param_value in block["params"].items():
-                            block_elem.set(param_name, param_value)
-                    xml_tree = ET.ElementTree(root)
-                    xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
-                    print("XML file saved!")
-                else:
-                    # Create a new block at the mouse position
-                    
-                    block_rect = pygame.Rect(event.pos[0], event.pos[1], 100, 50)
-                    blocksCounter += 1
-                    blockID = f"rect_{blocksCounter}"
-                    block = {
-                        "rect_": block_rect,
-                        "params": {"position": block_rect.center}
-                    }
-                    blocks.append(block)
+class Block:
+    count = 0  # Class variable to keep track of the block count
 
-    # Clear the window
-    window.fill(BLACK)
+    def __init__(self, name, shape, params=None):
+        self.name = name
+        self.number = Block.count + 1
+        self.id = f"{self.name}_{self.number}"
+        self.shape = shape
+        self.params = params or {}
+        Block.count += 1
 
-    # Update block positions
-    for block in blocks:
-        if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
-            if block["rect_"].collidepoint(pygame.mouse.get_pos()):
-                # Move the block with the mouse cursor
-                block["rect_"].center = pygame.mouse.get_pos()
-    # Draw the blocks
-    for block in blocks:
-        pygame.draw.rect(window, WHITE, block["rect_"])
 
-    # Draw the "Save" button
-    pygame.draw.rect(window, BUTTON_COLOR, save_button_rect)
-    save_font = pygame.font.Font(None, 24)
-    save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
-    save_text_rect = save_text.get_rect(center=save_button_rect.center)
-    window.blit(save_text, save_text_rect)
+class Game:
+    def __init__(self):
+        self.blocks = []
+        self.is_rectangle = True
+        self.save_button_rect = pygame.Rect(
+            WINDOW_WIDTH - BUTTON_WIDTH - 10,
+            WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT
+        )
+        self.toggle_button_rect = pygame.Rect(
+            WINDOW_WIDTH - BUTTON_WIDTH - 10,
+            WINDOW_HEIGHT - BUTTON_HEIGHT * 2 - 20,
+            BUTTON_WIDTH,
+            BUTTON_HEIGHT
+        )
 
-    # Update the display
-    pygame.display.flip()
+    def run(self):
+        running = True
+        while running:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                elif event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button
+                        if self.save_button_rect.collidepoint(event.pos):
+                            self.save_xml()
+                        elif self.toggle_button_rect.collidepoint(event.pos):
+                            self.toggle_shape()
+                        else:
+                            self.create_block("block",event.pos)
 
-# Quit the game
-pygame.quit()
+            self.update_blocks()
+            self.draw_window()
+
+        pygame.quit()
+
+    def save_xml(self):
+        root = ET.Element("root")
+        for block in self.blocks:
+            block_elem = ET.SubElement(root, "block")
+            block_elem.set("id", block.id)
+            for param_name, param_value in block.params.items():
+                block_elem.set(param_name, param_value)
+        xml_tree = ET.ElementTree(root)
+        xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
+        print("XML file saved!")
+
+    def toggle_shape(self):
+        self.is_rectangle = not self.is_rectangle
+
+    def create_block(self, name, pos):
+        shape = pygame.Rect(pos[0], pos[1], 100, 50) if self.is_rectangle else pygame.Rect(pos[0], pos[1], 50, 50)
+        block = Block(name, shape)
+        self.blocks.append(block)
+
+    def update_blocks(self):
+        for block in self.blocks:
+            if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
+                if block.shape.collidepoint(pygame.mouse.get_pos()):
+                    block.shape.center = pygame.mouse.get_pos()
+
+    def draw_window(self):
+        window.fill(BLACK)
+
+        for block in self.blocks:
+            if self.is_rectangle:
+                pygame.draw.rect(window, WHITE, block.shape)
+            else:
+                pygame.draw.ellipse(window, WHITE, block.shape)
+
+        pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
+        save_font = pygame.font.Font(None, 24)
+        save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
+        save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
+        window.blit(save_text, save_text_rect)
+
+        pygame.draw.rect(window, BUTTON_COLOR, self.toggle_button_rect)
+        toggle_font = pygame.font.Font(None, 24)
+        toggle_text = toggle_font.render("Toggle", True, BUTTON_TEXT_COLOR)
+        toggle_text_rect = toggle_text.get_rect(center=self.toggle_button_rect.center)
+        window.blit(toggle_text, toggle_text_rect)
+
+        pygame.display.flip()
+
+
+# Create the game object and run the game
+game = Game()
+game.run()
