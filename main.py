@@ -1,6 +1,6 @@
 import pygame
 import xml.etree.ElementTree as ET
-import uuid
+from typing import List
 
 # Initialize Pygame
 pygame.init()
@@ -36,7 +36,7 @@ class Block:
 
 class Game:
     def __init__(self):
-        self.blocks = []
+        self.blocks:  List[Block] = []
         self.is_rectangle = True
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
@@ -73,10 +73,10 @@ class Game:
 
     def save_xml(self):
         root = ET.Element("root")
-        for block in self.blocks:
-            block_elem = ET.SubElement(root, "block")
-            block_elem.set("id", block.id)
-            for param_name, param_value in block.params.items():
+        for obj in self.blocks:
+            block_elem = ET.SubElement(root, obj)
+            block_elem.set("id", obj.id)
+            for param_name, param_value in obj.params.items():
                 block_elem.set(param_name, param_value)
         xml_tree = ET.ElementTree(root)
         xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
