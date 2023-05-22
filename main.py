@@ -2,6 +2,8 @@ import pygame
 import xml.etree.ElementTree as ET
 from typing import List
 
+from Block import Block
+
 # Initialize Pygame
 pygame.init()
 
@@ -20,19 +22,6 @@ BUTTON_WIDTH = 100
 BUTTON_HEIGHT = 30
 BUTTON_COLOR = (100, 100, 100)
 BUTTON_TEXT_COLOR = WHITE
-
-
-class Block:
-    count = 0  # Class variable to keep track of the block count
-
-    def __init__(self, name, shape, params=None):
-        self.name = name
-        self.number = Block.count + 1
-        self.id = f"{self.name}_{self.number}"
-        self.shape = shape
-        self.params = params or {}
-        Block.count += 1
-
 
 class Game:
     def __init__(self):
