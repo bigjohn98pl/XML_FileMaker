@@ -74,7 +74,7 @@ class Game:
     def save_xml(self):
         root = ET.Element("root")
         for obj in self.blocks:
-            block_elem = ET.SubElement(root, obj)
+            block_elem = ET.SubElement(root, obj.name)
             block_elem.set("id", obj.id)
             for param_name, param_value in obj.params.items():
                 block_elem.set(param_name, param_value)
