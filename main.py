@@ -1,4 +1,6 @@
 import pygame
+import tkinter as tk
+import tkinter.ttk as ttk
 import xml.etree.ElementTree as ET
 from typing import List
 
@@ -11,24 +13,57 @@ pygame.init()
 WINDOW_WIDTH = 800
 WINDOW_HEIGHT = 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+# set_window = tk.Tk()
 pygame.display.set_caption("XML Block Editor")
 
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED   = (255, 0, 0)
+BLUE   = (0, 255, 0)
+GREEN   = (0, 0, 255)
 
+OPTIONS = [
+    "testcase",
+    "parameter",
+    "testcasegroup"
+    ] #etc
+
+MOUSE_POS = []
 # Button parameters
 BUTTON_WIDTH = 100
 BUTTON_HEIGHT = 30
 BUTTON_COLOR = (100, 100, 100)
 BUTTON_TEXT_COLOR = WHITE
 
+def button_clicked(variable):
+    print(variable.get())
+
+def set_parameters_for_obj():
+    set_window = tk.Tk()
+    set_window.geometry('200x100')
+    set_window.title("Block settings")
+    label_type = tk.Label(text="Block Type:")
+
+    variable = tk.StringVar(set_window)
+    variable.set(OPTIONS[0])
+    menu_type = tk.OptionMenu(set_window,variable,*OPTIONS)
+    button_ok = tk.Button(set_window,text="OK",command=lambda: button_clicked(variable))
+    value_in = tk.Label(text="Value in:")
+    
+    label_type.pack()
+    value_in.pack()
+    menu_type.pack()
+    button_ok.pack()
+
+    set_window.mainloop()
+    # print(variable.get())
+    return variable.get()
+
 class Game:
     def __init__(self):
         self.objs: List[Block] = []
-        self.is_rectangle = True
-        self.update = False
+        self.make_more = True
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
             WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
@@ -55,20 +90,16 @@ class Game:
                         elif self.toggle_button_rect.collidepoint(event.pos):
                             self.toggle_shape()
                         else:
-                            if self.update == False:
-                                if self.is_rectangle:
-                                    self.create_block("block", event.pos)
-                                else:
-                                    self.create_block("circle", event.pos)
-                                print(*self.objs,sep=" ")
-                                pos = pygame.mouse.get_pos()
-                                print(f"1: {pos}")
-                                self.update = True
+                            if self.make_more:
+                                settings = set_parameters_for_obj()
+                                self.create_block(settings, event.pos)
+                            print(*self.objs,sep=" ")
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if event.button == 1:
-                        # self.update = False
-                        pos = pygame.mouse.get_pos()
-                        print(f"2: {pos}")
+                        pass
+                # if event.type == pygame.MOUSEMOTION:
+                #     print("rusza się!")
+
             self.update_objs()
             self.draw_window()
 
@@ -79,6 +110,7 @@ class Game:
         for obj in self.objs:
             block_elem = ET.SubElement(root, obj.name)
             block_elem.set("id", obj.id)
+            block_elem.text = "lol"
             for param_name, param_value in obj.params.items():
                 block_elem.set(param_name, param_value)
         xml_tree = ET.ElementTree(root)
@@ -89,33 +121,43 @@ class Game:
         self.is_rectangle = not self.is_rectangle
 
     def create_block(self, name, pos):
-        
-        if name == "block":
-            shape = pygame.Rect(pos[0], pos[1], 50, 50)
-        elif name =="circle":
-             shape = pygame.Rect(pos[0], pos[1], 50, 50)
+        shape = pygame.Rect
+        shape = pygame.Rect(pos[0], pos[1], 50, 50)
         block = Block(name, shape)
         block.add_param("pos",str(pos))
-        print(f"update: {self.update}")
+        print(f"make_more: {self.make_more}")
         self.objs.append(block)
 
     def update_objs(self):
+        MOUSE_POS = pygame.mouse.get_pos()
         for obj in self.objs:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
-                if obj.shape.collidepoint(pygame.mouse.get_pos()):
-                    obj.shape.center = pygame.mouse.get_pos()
-                    self.update = True
-                else:
-                    self.update = False
+                if obj.shape.collidepoint(MOUSE_POS):
+                    obj.shape.center = MOUSE_POS
+                    
+            if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
+                obj.hover = True
+                self.make_more = False
+                break
+            else:
+                obj.hover = False
+                self.make_more = True
+                # print(f"{obj.id}:{self.make_more}")
+            
+        print(*self.objs,sep="\n")
+        print("==========================================")
+        
 
     def draw_window(self):
         window.fill(BLACK)
 
         for obj in self.objs:
-            if obj.name == "block":
-                pygame.draw.rect(window, WHITE, obj.shape)
-            else:
-                pygame.draw.ellipse(window, RED, obj.shape)
+            if obj.name == OPTIONS[0]:
+                pygame.draw.rect(window, RED, obj.shape)
+            elif obj.name == OPTIONS[1]:
+                pygame.draw.rect(window, BLUE, obj.shape)
+            elif obj.name == OPTIONS[2]:
+                pygame.draw.rect(window, GREEN, obj.shape)
 
         pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)

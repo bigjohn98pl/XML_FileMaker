@@ -5,6 +5,7 @@ class Block:
         self.name = name
         self.number = Block.count + 1
         self.id = f"{self.name}_{self.number}"
+        self.hover = False
         self.shape = shape
         self.params = params or {}
         Block.count += 1
@@ -13,4 +14,4 @@ class Block:
         self.params[key] = value
         
     def __str__(self) -> str:
-        return f"{self.params}"
+        return f"ID: {self.id} hover: {self.hover}"
