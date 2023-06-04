@@ -8,3 +8,9 @@ class Block:
         self.shape = shape
         self.params = params or {}
         Block.count += 1
+
+    def add_param(self, key, value):
+        self.params[key] = value
+        
+    def __str__(self) -> str:
+        return f"{self.params}"
