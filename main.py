@@ -17,11 +17,13 @@ window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 pygame.display.set_caption("XML Block Editor")
 
 # Colors
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED   = (255, 125, 125)
-BLUE   = (125, 255, 125)
-GREEN   = (125, 125, 255)
+BLACK       = (0, 0, 0)
+WHITE       = (255, 255, 255)
+RED         = (255, 0, 0)
+RED_LIGHT   = (255, 77, 77)
+BLUE        = (102, 204, 255)
+GREEN       = (46, 184, 46)
+YELLOW      = (255, 204, 102)
 
 OPTIONS = [
     "testcase",
@@ -108,7 +110,14 @@ class Game:
 
     def create_block(self, name, pos):
         shape = pygame.Rect
-        shape = pygame.Rect(pos[0], pos[1], 50, 50)
+        if name == OPTIONS[0]:
+            shape = pygame.Rect(pos[0], pos[1], 150, 50)
+        elif name == OPTIONS[1]:
+            shape = pygame.Rect(pos[0], pos[1], 100, 30)
+        elif name == OPTIONS[2]:
+            shape = pygame.Rect(pos[0], pos[1], 200, 200)
+        else:
+            pass
         block = Block(name, shape)
         block.add_param("pos",str(pos))
         print(f"make_more: {self.make_more}")
@@ -133,12 +142,12 @@ class Game:
         window.fill(BLACK)
 
         for obj in self.objs:
-            if obj.name == OPTIONS[0]:
-                pygame.draw.rect(window, RED, obj.shape)
+            if obj.name == OPTIONS[2]:
+                pygame.draw.rect(window, YELLOW, obj.shape)
+            elif obj.name == OPTIONS[0]:
+                pygame.draw.rect(window, RED_LIGHT, obj.shape)
             elif obj.name == OPTIONS[1]:
                 pygame.draw.rect(window, BLUE, obj.shape)
-            elif obj.name == OPTIONS[2]:
-                pygame.draw.rect(window, GREEN, obj.shape)
 
         pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)

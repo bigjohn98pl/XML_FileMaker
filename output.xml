@@ -1,2 +1,2 @@
 <?xml version='1.0' encoding='utf-8'?>
-<root><testcase id="testcase_1" pos="(190, 207)">lol</testcase><testcase id="testcase_2" pos="(426, 220)">lol</testcase><parameter id="parameter_3" pos="(299, 333)">lol</parameter><testcasegroup id="testcasegroup_4" pos="(140, 357)">lol</testcasegroup></root>
+<root><testcasegroup id="testcasegroup_1" pos="(167, 136)">lol</testcasegroup><testcase id="testcase_2" pos="(461, 185)">lol</testcase><parameter id="parameter_3" pos="(139, 137)">lol</parameter></root>
