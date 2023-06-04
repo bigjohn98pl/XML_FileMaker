@@ -19,9 +19,9 @@ pygame.display.set_caption("XML Block Editor")
 # Colors
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
-RED   = (255, 0, 0)
-BLUE   = (0, 255, 0)
-GREEN   = (0, 0, 255)
+RED   = (255, 125, 125)
+BLUE   = (125, 255, 125)
+GREEN   = (125, 125, 255)
 
 OPTIONS = [
     "testcase",
@@ -57,7 +57,6 @@ def set_parameters_for_obj():
     button_ok.pack()
 
     set_window.mainloop()
-    # print(variable.get())
     return variable.get()
 
 class Game:
@@ -67,12 +66,6 @@ class Game:
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
             WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT
-        )
-        self.toggle_button_rect = pygame.Rect(
-            WINDOW_WIDTH - BUTTON_WIDTH - 10,
-            WINDOW_HEIGHT - BUTTON_HEIGHT * 2 - 20,
             BUTTON_WIDTH,
             BUTTON_HEIGHT
         )
@@ -87,8 +80,6 @@ class Game:
                     if event.button == 1:  # Left mouse button
                         if self.save_button_rect.collidepoint(event.pos):
                             self.save_xml()
-                        elif self.toggle_button_rect.collidepoint(event.pos):
-                            self.toggle_shape()
                         else:
                             if self.make_more:
                                 settings = set_parameters_for_obj()
@@ -97,8 +88,6 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if event.button == 1:
                         pass
-                # if event.type == pygame.MOUSEMOTION:
-                #     print("rusza się!")
 
             self.update_objs()
             self.draw_window()
@@ -116,9 +105,6 @@ class Game:
         xml_tree = ET.ElementTree(root)
         xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
         print("XML file saved!")
-
-    def toggle_shape(self):
-        self.is_rectangle = not self.is_rectangle
 
     def create_block(self, name, pos):
         shape = pygame.Rect
@@ -141,12 +127,7 @@ class Game:
                 break
             else:
                 obj.hover = False
-                self.make_more = True
-                # print(f"{obj.id}:{self.make_more}")
-            
-        print(*self.objs,sep="\n")
-        print("==========================================")
-        
+                self.make_more = True  
 
     def draw_window(self):
         window.fill(BLACK)
@@ -164,12 +145,6 @@ class Game:
         save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
         save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
         window.blit(save_text, save_text_rect)
-
-        pygame.draw.rect(window, BUTTON_COLOR, self.toggle_button_rect)
-        toggle_font = pygame.font.Font(None, 24)
-        toggle_text = toggle_font.render("Toggle", True, BUTTON_TEXT_COLOR)
-        toggle_text_rect = toggle_text.get_rect(center=self.toggle_button_rect.center)
-        window.blit(toggle_text, toggle_text_rect)
 
         pygame.display.flip()
 
