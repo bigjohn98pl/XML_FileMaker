@@ -5,38 +5,13 @@ import xml.etree.ElementTree as ET
 from typing import List
 
 from Block import Block
+from consts import *
 
 # Initialize Pygame
 pygame.init()
 
-# Set up the window dimensions
-WINDOW_WIDTH = 800
-WINDOW_HEIGHT = 600
 window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-# set_window = tk.Tk()
 pygame.display.set_caption("XML Block Editor")
-
-# Colors
-BLACK       = (0, 0, 0)
-WHITE       = (255, 255, 255)
-RED         = (255, 0, 0)
-RED_LIGHT   = (255, 77, 77)
-BLUE        = (102, 204, 255)
-GREEN       = (46, 184, 46)
-YELLOW      = (255, 204, 102)
-
-OPTIONS = [
-    "testcase",
-    "parameter",
-    "testcasegroup"
-    ] #etc
-
-MOUSE_POS = []
-# Button parameters
-BUTTON_WIDTH = 100
-BUTTON_HEIGHT = 30
-BUTTON_COLOR = (100, 100, 100)
-BUTTON_TEXT_COLOR = WHITE
 
 def button_clicked(variable):
     print(variable.get())
@@ -110,18 +85,24 @@ class Game:
 
     def create_block(self, name, pos):
         shape = pygame.Rect
+        color = (255, 255, 255)
         if name == OPTIONS[0]:
-            shape = pygame.Rect(pos[0], pos[1], 150, 50)
-        elif name == OPTIONS[1]:
-            shape = pygame.Rect(pos[0], pos[1], 100, 30)
-        elif name == OPTIONS[2]:
             shape = pygame.Rect(pos[0], pos[1], 200, 200)
+            color = YELLOW
+        elif name == OPTIONS[1]:
+            shape = pygame.Rect(pos[0], pos[1], 150, 50)
+            color = RED_LIGHT
+        elif name == OPTIONS[2]:
+            shape = pygame.Rect(pos[0], pos[1], 100, 30)
+            color = BLUE
         else:
             pass
         block = Block(name, shape)
         block.add_param("pos",str(pos))
+        block.add_param("color",color)
         print(f"make_more: {self.make_more}")
         self.objs.append(block)
+        self.objs.sort()
 
     def update_objs(self):
         MOUSE_POS = pygame.mouse.get_pos()
@@ -129,6 +110,8 @@ class Game:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
                 if obj.shape.collidepoint(MOUSE_POS):
                     obj.shape.center = MOUSE_POS
+                    # if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
+                    #     print("siema ziom")
                     
             if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
                 obj.hover = True
@@ -136,18 +119,14 @@ class Game:
                 break
             else:
                 obj.hover = False
-                self.make_more = True  
+                self.make_more = True
+
 
     def draw_window(self):
         window.fill(BLACK)
 
         for obj in self.objs:
-            if obj.name == OPTIONS[2]:
-                pygame.draw.rect(window, YELLOW, obj.shape)
-            elif obj.name == OPTIONS[0]:
-                pygame.draw.rect(window, RED_LIGHT, obj.shape)
-            elif obj.name == OPTIONS[1]:
-                pygame.draw.rect(window, BLUE, obj.shape)
+            obj.draw_on(window)
 
         pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)
