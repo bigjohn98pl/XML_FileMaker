@@ -1,6 +1,8 @@
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
+from PIL import Image, ImageTk
+import numpy as np
 import xml.dom.minidom as MD
 from typing import List
 
@@ -9,9 +11,35 @@ from consts import *
 
 # Initialize Pygame
 pygame.init()
+pygame_window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("XML Block Editor")
+def tk_window(obj:Block):
+    # Initialize Tkinter
+    tk_window = tk.Tk()
+    tk_window.geometry('500x500')
+    tk_window.title("Pygame in Tkinter")
+
+    # Create a Tkinter canvas to hold the Pygame surface
+    canvas = tk.Canvas(tk_window, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+    canvas.pack()
+
+    # Convert the Pygame surface to a NumPy array
+    pygame_surface = pygame_window
+    obj.draw_on(pygame_surface)
+    pygame_image = pygame.surfarray.array3d(pygame_surface).swapaxes(0, 1)
+    pygame_image = np.ascontiguousarray(pygame_image)
+
+    # Create a PIL image from the NumPy array
+    pil_image = Image.frombytes('RGB', (WINDOW_WIDTH, WINDOW_HEIGHT), pygame_image.tobytes())
+
+    # Create a Tkinter image from the PIL image
+    tk_image = ImageTk.PhotoImage(pil_image)
+
+    # Draw the Tkinter image on the canvas
+    canvas.create_image(0, 0, anchor=tk.NW, image=tk_image)
+
+    # Start the Tkinter event loop
+    tk_window.mainloop()
 
 def button_clicked(variable):
     print(variable.get())
@@ -56,6 +84,7 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if self.save_button_rect.collidepoint(event.pos):
+                            tk_window(self.objs[0])
                             self.save_xml()
                         else:
                             if self.make_more:
@@ -135,16 +164,16 @@ class Game:
 
 
     def draw_window(self):
-        window.fill(BLACK)
+        pygame_window.fill(BLACK)
 
         for obj in self.objs:
-            obj.draw_on(window)
+            obj.draw_on(pygame_window)
 
-        pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
+        pygame.draw.rect(pygame_window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)
         save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
         save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
-        window.blit(save_text, save_text_rect)
+        pygame_window.blit(save_text, save_text_rect)
 
         pygame.display.flip()
 

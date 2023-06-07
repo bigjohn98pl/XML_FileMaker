@@ -1,6 +1,4 @@
 <?xml version="1.0" ?>
 <module>
-    <testcasegroup id="testcasegroup_1">(79, 68)</testcasegroup>
-    <testcasegroup id="testcasegroup_2">(387, 113)</testcasegroup>
-    <parameter id="parameter_3">(59, 332)</parameter>
+    <testcasegroup id="testcasegroup_1">(182, 166)</testcasegroup>
 </module>
