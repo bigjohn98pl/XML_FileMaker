@@ -16,7 +16,7 @@ pygame_window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
 def tk_window(obj:Block):
     # Initialize Tkinter
     tk_window = tk.Tk()
-    tk_window.geometry('500x500')
+    tk_window.geometry(f'{WINDOW_WIDTH+10}x{WINDOW_HEIGHT+10}')
     tk_window.title("Pygame in Tkinter")
 
     # Create a Tkinter canvas to hold the Pygame surface

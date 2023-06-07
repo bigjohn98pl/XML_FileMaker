@@ -19,7 +19,7 @@ BUTTON_TEXT_COLOR = WHITE
 
 # Options for tk window
 OPTIONS = [
-    "testcasegroup",
+    "DUPA",
     "testcase",
     "parameter",
     ] #etc
