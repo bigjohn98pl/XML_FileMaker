@@ -54,7 +54,7 @@ class Game:
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
-                    if event.button == 1:  # Left mouse button
+                    if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if self.save_button_rect.collidepoint(event.pos):
                             self.save_xml()
                         else:
@@ -63,7 +63,8 @@ class Game:
                                 self.create_block(settings, event.pos)
                             print(*self.objs,sep=" ")
                 elif event.type == pygame.MOUSEBUTTONUP:    
-                    if event.button == 1:
+                    if pygame.MOUSEBUTTONUP:
+                        print("click")
                         pass
 
             self.update_objs()
@@ -90,21 +91,19 @@ class Game:
 
     def create_block(self, name, pos):
         try:
-            shape = None
             color = None
             if name == OPTIONS[0]:
-                shape = pygame.Rect(pos[0], pos[1], 200, 200)
+                block = Block(name,(pos[0], pos[1], 200, 200) , name)
                 color = YELLOW
             elif name == OPTIONS[1]:
-                shape = pygame.Rect(pos[0], pos[1], 150, 50)
+                block = Block(name,(pos[0], pos[1], 150, 50) , name)
                 color = RED_LIGHT
             elif name == OPTIONS[2]:
-                shape = pygame.Rect(pos[0], pos[1], 100, 30)
+                block = Block(name,(pos[0], pos[1], 100, 30) , name)
                 color = BLUE
             else:
                 raise ValueError("Invalid block name.")
 
-            block = Block(name, shape, name)
             block.add_param("pos",str(pos))
             block.add_param("color",color)
             print(f"make_more: {self.make_more}")
@@ -121,12 +120,12 @@ class Game:
         MOUSE_POS = pygame.mouse.get_pos()
         for obj in self.objs:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
-                if obj.shape.collidepoint(MOUSE_POS):
+                if obj.rect.collidepoint(MOUSE_POS):
                     obj.update_position(MOUSE_POS)
-                    # if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
+                    # if obj.rect.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
                     #     print("siema ziom")
                     
-            if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
+            if obj.rect.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
                 obj.hover = True
                 self.make_more = False
                 break
