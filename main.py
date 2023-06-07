@@ -84,25 +84,33 @@ class Game:
         print("XML file saved!")
 
     def create_block(self, name, pos):
-        shape = pygame.Rect
-        color = (255, 255, 255)
-        if name == OPTIONS[0]:
-            shape = pygame.Rect(pos[0], pos[1], 200, 200)
-            color = YELLOW
-        elif name == OPTIONS[1]:
-            shape = pygame.Rect(pos[0], pos[1], 150, 50)
-            color = RED_LIGHT
-        elif name == OPTIONS[2]:
-            shape = pygame.Rect(pos[0], pos[1], 100, 30)
-            color = BLUE
-        else:
-            pass
-        block = Block(name, shape)
-        block.add_param("pos",str(pos))
-        block.add_param("color",color)
-        print(f"make_more: {self.make_more}")
-        self.objs.append(block)
-        self.objs.sort()
+        try:
+            shape = None
+            color = None
+            if name == OPTIONS[0]:
+                shape = pygame.Rect(pos[0], pos[1], 200, 200)
+                color = YELLOW
+            elif name == OPTIONS[1]:
+                shape = pygame.Rect(pos[0], pos[1], 150, 50)
+                color = RED_LIGHT
+            elif name == OPTIONS[2]:
+                shape = pygame.Rect(pos[0], pos[1], 100, 30)
+                color = BLUE
+            else:
+                raise ValueError("Invalid block name.")
+
+            block = Block(name, shape)
+            block.add_param("pos",str(pos))
+            block.add_param("color",color)
+            print(f"make_more: {self.make_more}")
+            self.objs.append(block)
+            self.objs.sort()
+
+        except ValueError as e:
+            print(f"Error: {str(e)}")
+        except Exception as e:
+            print(f"An error occurred: {str(e)}")
+
 
     def update_objs(self):
         MOUSE_POS = pygame.mouse.get_pos()
