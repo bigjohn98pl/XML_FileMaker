@@ -99,7 +99,7 @@ class Game:
             else:
                 raise ValueError("Invalid block name.")
 
-            block = Block(name, shape)
+            block = Block(name, shape, name)
             block.add_param("pos",str(pos))
             block.add_param("color",color)
             print(f"make_more: {self.make_more}")
@@ -117,7 +117,7 @@ class Game:
         for obj in self.objs:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
                 if obj.shape.collidepoint(MOUSE_POS):
-                    obj.shape.center = MOUSE_POS
+                    obj.update_position(MOUSE_POS)
                     # if obj.shape.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
                     #     print("siema ziom")
                     

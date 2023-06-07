@@ -2,16 +2,22 @@ from consts import *
 import pygame
 import ast
 
+pygame.font.init()
+
 class Block:
     count = 0  # Class variable to keep track of the block count
     map = {"testcasegroup": 0,"testcase": 1,"parameter": 2,}
-    def __init__(self, name, shape, params=None):
+    font = pygame.font.Font('freesansbold.ttf', 32)
+    def __init__(self, name: str, shape: pygame.Rect, text):
         self.name = name
         self.number = Block.count + 1
         self.id = f"{self.name}_{self.number}"
         self.hover = False
         self.shape = shape
-        self.params = params or {}
+        self.text =  Block.font.render(text, True, BLUE, RED_LIGHT)
+        self.text_rect  = self.text.get_rect()
+        self.text_rect.center = self.shape.center
+        self.params = {}
         Block.count += 1
         self.children = []
 
@@ -21,8 +27,13 @@ class Block:
     def add_child(self, child_block):
         self.children.append(child_block)
     
-    def draw_on(self,screen):
+    def update_position(self,position: tuple[int,int]):
+        self.shape.center = position
+        self.text_rect.center = self.shape.center
+
+    def draw_on(self,screen: pygame.Surface):
         pygame.draw.rect(screen,self.params["color"] or RED, self.shape)
+        screen.blit(self.text,self.text_rect)
         for child in self.children:
             child.draw(screen)
 
