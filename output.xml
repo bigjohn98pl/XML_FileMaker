@@ -1,2 +1,6 @@
-<?xml version='1.0' encoding='utf-8'?>
-<root><testcasegroup id="testcasegroup_1" pos="(167, 136)">lol</testcasegroup><testcase id="testcase_2" pos="(461, 185)">lol</testcase><parameter id="parameter_3" pos="(139, 137)">lol</parameter></root>
+<?xml version="1.0" ?>
+<module>
+    <testcasegroup id="testcasegroup_1">(79, 68)</testcasegroup>
+    <testcasegroup id="testcasegroup_2">(387, 113)</testcasegroup>
+    <parameter id="parameter_3">(59, 332)</parameter>
+</module>

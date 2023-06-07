@@ -1,7 +1,7 @@
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
-import xml.etree.ElementTree as ET
+import xml.dom.minidom as MD
 from typing import List
 
 from Block import Block
@@ -72,15 +72,20 @@ class Game:
         pygame.quit()
 
     def save_xml(self):
-        root = ET.Element("root")
+        # TODO: make a uploat_xml funcionality base on xml.etree.ElementTree (faster for upload?)
+        doc = MD.Document()
+        module = doc.createElement("module")
+        doc.appendChild(module)
+
         for obj in self.objs:
-            block_elem = ET.SubElement(root, obj.name)
-            block_elem.set("id", obj.id)
-            block_elem.text = "lol"
-            for param_name, param_value in obj.params.items():
-                block_elem.set(param_name, param_value)
-        xml_tree = ET.ElementTree(root)
-        xml_tree.write("output.xml", encoding="utf-8", xml_declaration=True)
+            obj_xml = doc.createElement(obj.name)
+            obj_xml.setAttribute("id",obj.id)
+            obj_xml.appendChild(doc.createTextNode(str(obj.params["pos"])))
+            module.appendChild(obj_xml)
+        
+        xml_str = doc.toprettyxml(indent="    ")
+        with open("output.xml", "w") as f:
+            f.write(xml_str)
         print("XML file saved!")
 
     def create_block(self, name, pos):
