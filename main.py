@@ -94,18 +94,14 @@ class Game:
             color = None
             if name == OPTIONS[0]:
                 block = Block(name,(pos[0], pos[1], 200, 200) , name)
-                color = YELLOW
             elif name == OPTIONS[1]:
                 block = Block(name,(pos[0], pos[1], 150, 50) , name)
-                color = RED_LIGHT
             elif name == OPTIONS[2]:
                 block = Block(name,(pos[0], pos[1], 100, 30) , name)
-                color = BLUE
             else:
                 raise ValueError("Invalid block name.")
 
             block.add_param("pos",str(pos))
-            block.add_param("color",color)
             print(f"make_more: {self.make_more}")
             self.objs.append(block)
             self.objs.sort()
@@ -135,7 +131,7 @@ class Game:
 
 
     def draw_window(self):
-        window.fill(BLACK)
+        window.fill(GRAY)
 
         for obj in self.objs:
             obj.draw_on(window)
