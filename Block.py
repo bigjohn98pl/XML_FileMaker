@@ -5,23 +5,24 @@ import ast
 pygame.font.init()
 
 class Block:
-    count = 0  # Class variable to keep track of the block count
+    count: int = 0  # Class variable to keep track of the block count
     font = pygame.font.Font('freesansbold.ttf', 32)
 
     def __init__(self, name: str, position_and_size: tuple[int,int,int,int], text):
-        self.name = name
-        self.number = Block.count + 1
-        self.id = f"{self.name}_{self.number}"
-        self.hover = False
-        self.rect = pygame.Rect(position_and_size)
-        print(MAP_COLOR[self.name])
-        self.color = MAP_COLOR[self.name] or WHITE
+        Block.count += 1
+        self.number: int    = Block.count + 1
+        self.name: str      = name
+        self.id: str        = f"{self.name}_{self.number}"
+        self.color          = MAP_COLOR[self.name] or WHITE
         self.dimmed_color = tuple(int(component * DIM_FACTOR) for component in self.color)
+        self.hover = False
+
+        self.rect = pygame.Rect(position_and_size)
         self.text =  Block.font.render(text, True, BLACK, self.dimmed_color)
         self.text_rect  = self.text.get_rect()
         self.text_rect.center = self.rect.center
+
         self.params = {}
-        Block.count += 1
         self.children = []
 
     def add_param(self, key, value):
