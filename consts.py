@@ -28,6 +28,7 @@ OPTIONS = [
     "testcase",
     "parameter",
     ] #etc
+SELECTED_OPTION = OPTIONS[0]
 
 MAP_NAME = {
     "testcasegroup" : 0,

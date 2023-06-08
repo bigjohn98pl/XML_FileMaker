@@ -57,7 +57,7 @@ class Game:
                         else:
                             if self.make_more:
                                 # settings = set_parameters_for_obj()
-                                self.create_block(OPTIONS[0], event.pos)
+                                self.create_block(SELECTED_OPTION, event.pos)
                             print(*self.objs,sep=" ")
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -145,10 +145,9 @@ class Game:
 # Create the game object and run the game
 # game = Game()
 
-def draw():
-    rec = pygame.Rect((20, 20, 120, 120))
-    pygame.draw.rect(window, RED, rec)
-    pygame.display.update()
+def chose_option(chose):
+    global SELECTED_OPTION
+    SELECTED_OPTION = OPTIONS[chose]
 
 # def pygame_event_loop(window):
 #     print("start pygame thread")
@@ -156,6 +155,7 @@ def draw():
 #     game.run()
 
 def pygame_thread_obj():
+    print("pygame_thread_obj")
     game = Game()
     game.run()
 
@@ -174,13 +174,18 @@ def main():
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     window.fill(pygame.Color(255, 255, 255))
     pygame.display.init()
-    button1 = tk.Button(buttonwin, text='Draw', command=draw)
+    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: chose_option(0))
     button1.pack(side=tk.LEFT)
+    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: chose_option(1))
+    button2.pack(side=tk.LEFT)
+    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: chose_option(2))
+    button3.pack(side=tk.LEFT)
 
     pygame.init()
     window = pygame.display.set_mode((500, 500))
     window.fill(pygame.Color(255, 255, 255))
     pygame_thread = threading.Thread(target=pygame_thread_obj)
+    pygame_thread.daemon = True
     pygame_thread.start()
 
     root.mainloop()

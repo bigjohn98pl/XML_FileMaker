@@ -1,5 +1,6 @@
 <?xml version="1.0" ?>
 <module>
-    <testcasegroup id="testcasegroup_1">(295, 215)</testcasegroup>
-    <testcasegroup id="testcasegroup_2">(466, 451)</testcasegroup>
+    <testcasegroup id="testcasegroup_1">(287, 264)</testcasegroup>
+    <testcasegroup id="testcasegroup_2">(561, 291)</testcasegroup>
+    <testcasegroup id="testcasegroup_3">(289, 431)</testcasegroup>
 </module>
