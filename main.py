@@ -1,17 +1,13 @@
+import os
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
 import xml.dom.minidom as MD
 from typing import List
+import threading
 
 from Block import Block
 from consts import *
-
-# Initialize Pygame
-pygame.init()
-
-window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-pygame.display.set_caption("XML Block Editor")
 
 def button_clicked(variable):
     print(variable.get())
@@ -38,6 +34,7 @@ def set_parameters_for_obj():
 
 class Game:
     def __init__(self):
+        self.window: pygame.Surface = window
         self.objs: List[Block] = []
         self.make_more = True
         self.save_button_rect = pygame.Rect(
@@ -59,8 +56,8 @@ class Game:
                             self.save_xml()
                         else:
                             if self.make_more:
-                                settings = set_parameters_for_obj()
-                                self.create_block(settings, event.pos)
+                                # settings = set_parameters_for_obj()
+                                self.create_block(OPTIONS[0], event.pos)
                             print(*self.objs,sep=" ")
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -146,5 +143,51 @@ class Game:
 
 
 # Create the game object and run the game
-game = Game()
-game.run()
+# game = Game()
+
+def draw():
+    rec = pygame.Rect((20, 20, 120, 120))
+    pygame.draw.rect(window, RED, rec)
+    pygame.display.update()
+
+# def pygame_event_loop(window):
+#     print("start pygame thread")
+#     game = Game()
+#     game.run()
+
+def pygame_thread_obj():
+    game = Game()
+    game.run()
+
+def main():
+    root = tk.Tk()
+    embed = tk.Frame(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
+    embed.grid(columnspan=600, rowspan=500)
+    embed.pack(side=tk.LEFT)
+    buttonwin = tk.Frame(root, width=75, height=WINDOW_HEIGHT)
+    buttonwin.pack(side=tk.LEFT)
+
+    os.environ['SDL_WINDOWID'] = str(embed.winfo_id())
+    os.environ['SDL_VIDEODRIVER'] = 'windib'
+
+    global window
+    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    window.fill(pygame.Color(255, 255, 255))
+    pygame.display.init()
+    button1 = tk.Button(buttonwin, text='Draw', command=draw)
+    button1.pack(side=tk.LEFT)
+
+    pygame.init()
+    window = pygame.display.set_mode((500, 500))
+    window.fill(pygame.Color(255, 255, 255))
+    pygame_thread = threading.Thread(target=pygame_thread_obj)
+    pygame_thread.start()
+
+    root.mainloop()
+    # pygame_thread.join()
+
+
+if __name__ == "__main__":
+    print("mian start")
+    main()
+print("OUT")
