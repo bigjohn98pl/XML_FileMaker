@@ -1,12 +1,15 @@
+from typing import Literal, Tuple
+Color = Tuple[int, int, int]
+
 # Colors
-BLACK       = (0, 0, 0)
-GRAY        = (128, 128, 128)
-WHITE       = (255, 255, 255)
-RED         = (255, 0, 0)
-RED_LIGHT   = (255, 77, 77)
-BLUE        = (102, 204, 255)
-GREEN       = (46, 184, 46)
-YELLOW      = (255, 204, 102)
+BLACK: Color       = (0, 0, 0)
+GRAY: Color        = (128, 128, 128)
+WHITE: Color       = (255, 255, 255)
+RED: Color         = (255, 0, 0)
+RED_LIGHT: Color   = (255, 77, 77)
+BLUE: Color        = (102, 204, 255)
+GREEN: Color       = (46, 184, 46)
+YELLOW: Color      = (255, 204, 102)
 DIM_FACTOR = 0.85
 # Set up the window dimensions
 WINDOW_WIDTH    = 800
