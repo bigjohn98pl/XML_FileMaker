@@ -163,9 +163,6 @@ def main():
     button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: chose_option(2))
     button3.pack(side=tk.TOP)
 
-    pygame.init()
-    window = pygame.display.set_mode((500, 500))
-    window.fill(pygame.Color(255, 255, 255))
     pygame_thread = threading.Thread(target=pygame_thread_obj)
     pygame_thread.daemon = True
     pygame_thread.start()
