@@ -18,7 +18,6 @@ WINDOW_HEIGHT   = 600
 
 # Button parameters
 BUTTON_WIDTH    = 100
-BUTTON_WIDTH2    = 100
 BUTTON_HEIGHT   = 30
 BUTTON_COLOR: Color= (100, 100, 100)
 BUTTON_TEXT_COLOR = WHITE
@@ -30,6 +29,11 @@ OPTIONS = [
     "parameter",
     ] #etc
 SELECTED_OPTION = OPTIONS[0]
+BLOCK_SIZE = {
+    "testcasegroup" : (200, 200),
+    "testcase"      : (150, 50),
+    "parameter"     : (100, 30),
+}
 
 MAP_NAME = {
     "testcasegroup" : 0,
