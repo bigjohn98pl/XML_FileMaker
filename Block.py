@@ -1,6 +1,7 @@
 from consts import *
 import pygame
 import ast
+from typing import List
 
 pygame.font.init()
 
@@ -10,20 +11,23 @@ class Block:
 
     def __init__(self, name: str, position_and_size: tuple[int,int,int,int], text):
         Block.count += 1
-        self.number: int    = Block.count + 1
-        self.name: str      = name
-        self.id: str        = f"{self.name}_{self.number}"
-        self.color          = MAP_COLOR[self.name] or WHITE
-        self.dimmed_color = tuple(int(component * DIM_FACTOR) for component in self.color)
+        self.number: int = Block.count + 1
+        self.name: str = name
+        self.id: str = f"{self.name}_{self.number}"
         self.hover = False
+        self.position = position_and_size[0:2]
+        self.size     = position_and_size[2:4]
+        self.color: Color     = MAP_COLOR[self.name] or WHITE
+        self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
+        
 
         self.rect = pygame.Rect(position_and_size)
-        self.text =  Block.font.render(text, True, BLACK, self.dimmed_color)
+        self.text =  Block.font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
         self.text_rect.center = self.rect.center
 
         self.params = {}
-        self.children = []
+        self.children: List[Block] = []
 
     def add_param(self, key, value):
         self.params[key] = value
@@ -39,7 +43,7 @@ class Block:
         pygame.draw.rect(screen,self.color, self.rect)
         screen.blit(self.text,self.text_rect)
         for child in self.children:
-            child.draw(screen)
+            child.draw_on(screen)
 
     def get_count(self):
         return self.count
