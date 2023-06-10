@@ -109,8 +109,6 @@ class Game:
             if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
                 if obj.rect.collidepoint(MOUSE_POS):
                     obj.update_position(MOUSE_POS)
-                    # if obj.rect.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
-                    #     print("siema ziom")
                     
             if obj.rect.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
                 obj.hover = True
@@ -119,7 +117,6 @@ class Game:
             else:
                 obj.hover = False
                 self.make_more = True
-
 
     def draw_window(self):
         window.fill(GRAY)
@@ -135,18 +132,9 @@ class Game:
 
         pygame.display.flip()
 
-
-# Create the game object and run the game
-# game = Game()
-
 def chose_option(chose):
     global SELECTED_OPTION
     SELECTED_OPTION = OPTIONS[chose]
-
-# def pygame_event_loop(window):
-#     print("start pygame thread")
-#     game = Game()
-#     game.run()
 
 def pygame_thread_obj():
     print("pygame_thread_obj")
@@ -175,16 +163,11 @@ def main():
     button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: chose_option(2))
     button3.pack(side=tk.TOP)
 
-    pygame.init()
-    window = pygame.display.set_mode((500, 500))
-    window.fill(pygame.Color(255, 255, 255))
     pygame_thread = threading.Thread(target=pygame_thread_obj)
     pygame_thread.daemon = True
     pygame_thread.start()
 
     root.mainloop()
-    # pygame_thread.join()
-
 
 if __name__ == "__main__":
     print("mian start")
