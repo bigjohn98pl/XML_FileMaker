@@ -88,7 +88,6 @@ class Game:
 
     def create_block(self, name, pos):
         try:
-            color = None
             if name == OPTIONS[0]:
                 block = Block(name,(pos[0], pos[1], 200, 200) , name)
             elif name == OPTIONS[1]:
@@ -99,7 +98,6 @@ class Game:
                 raise ValueError("Invalid block name.")
 
             block.add_param("pos",str(pos))
-            print(f"make_more: {self.make_more}")
             self.objs.append(block)
             self.objs.sort()
 
