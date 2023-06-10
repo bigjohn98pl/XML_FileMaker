@@ -9,19 +9,19 @@ class Block:
     count: int = 0  # Class variable to keep track of the block count
     font = pygame.font.Font('freesansbold.ttf', 32)
 
-    def __init__(self, name: str, position_and_size: tuple[int,int,int,int], text):
+    def __init__(self, name: str,text: str, position: tuple[int,int],size: tuple[int,int]):
         Block.count += 1
         self.number: int = Block.count + 1
         self.name: str = name
         self.id: str = f"{self.name}_{self.number}"
         self.hover = False
-        self.position = position_and_size[0:2]
-        self.size     = position_and_size[2:4]
+        self.position = position
+        self.size     = size
         self.color: Color     = MAP_COLOR[self.name] or WHITE
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
 
-        self.rect = pygame.Rect(position_and_size)
+        self.rect = pygame.Rect(position+size)
         self.text =  Block.font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
         self.text_rect.center = self.rect.center

@@ -88,12 +88,8 @@ class Game:
 
     def create_block(self, name, pos):
         try:
-            if name == OPTIONS[0]:
-                block = Block(name,(pos[0], pos[1], 200, 200) , name)
-            elif name == OPTIONS[1]:
-                block = Block(name,(pos[0], pos[1], 150, 50) , name)
-            elif name == OPTIONS[2]:
-                block = Block(name,(pos[0], pos[1], 100, 30) , name)
+            if name == SELECTED_OPTION:
+                block = Block(name,name,pos,BLOCK_SIZE[name])
             else:
                 raise ValueError("Invalid block name.")
 
