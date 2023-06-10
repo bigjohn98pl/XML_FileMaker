@@ -30,6 +30,11 @@ OPTIONS = [
     "parameter",
     ] #etc
 SELECTED_OPTION = OPTIONS[0]
+BLOCK_SIZE = {
+    "testcasegroup" : (200, 200),
+    "testcase"      : (150, 50),
+    "parameter"     : (100, 30),
+}
 
 MAP_NAME = {
     "testcasegroup" : 0,
