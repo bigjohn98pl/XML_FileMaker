@@ -11,17 +11,18 @@ class Block:
 
     def __init__(self, name: str,text: str, position: tuple[int,int],size: tuple[int,int]):
         Block.count += 1
-        self.number: int = Block.count + 1
+        self.number: int = Block.count
         self.name: str = name
         self.id: str = f"{self.name}_{self.number}"
         self.hover = False
+        self.press = False
         self.position = position
         self.size     = size
         self.color: Color     = MAP_COLOR[self.name] or WHITE
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
 
-        self.rect = pygame.Rect(position+size)
+        self.rect = pygame.Rect(position[0]-(size[0]/2),position[1]-size[1]/2,size[0],size[0])
         self.text =  Block.font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
         self.text_rect.center = self.rect.center
@@ -55,8 +56,8 @@ class Block:
 
     def __lt__(self, other):
         if isinstance(other, Block):
-            return MAP_NAME[self.name] < MAP_NAME[other.name]
+            return MAP_NAME[self.name]+self.count < MAP_NAME[other.name]+other.count
         return NotImplemented
     
     def __str__(self) -> str:
-        return f"ID: {self.id} hover: {self.hover}"
+        return f"ID: {self.id}\n press: {self.press}\n hover: {self.hover}\n"
