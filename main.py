@@ -1,9 +1,11 @@
 import os
+import sys
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
 import xml.dom.minidom as MD
 from typing import List
+from typing import Optional
 import threading
 
 from Block import Block
@@ -36,6 +38,7 @@ class Game:
     def __init__(self):
         self.window: pygame.Surface = window
         self.objs: List[Block] = []
+        self.active_obj: Optional[Block] = None
         self.make_more = True
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
@@ -52,17 +55,20 @@ class Game:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
+                        print(self.active_obj)
                         if self.save_button_rect.collidepoint(event.pos):
                             self.save_xml()
                         else:
                             if self.make_more:
-                                # settings = set_parameters_for_obj()
                                 self.create_block(SELECTED_OPTION, event.pos)
-                            print(*self.objs,sep=" ")
+                            else:
+                                pass
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
-                        print("click")
-                        pass
+                        os.system('cls')
+                        print(self.active_obj)
+                        print("======================")
+                        print(*self.objs)
 
             self.update_objs()
             self.draw_window()
@@ -89,12 +95,14 @@ class Game:
     def create_block(self, name, pos):
         try:
             if name == SELECTED_OPTION:
-                block = Block(name,name,pos,BLOCK_SIZE[name])
+                block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
             else:
                 raise ValueError("Invalid block name.")
 
             block.add_param("pos",str(pos))
-            self.objs.append(block)
+            self.active_obj = block
+            self.active_obj.active = True
+            self.objs.append(self.active_obj)
             self.objs.sort()
 
         except ValueError as e:
@@ -103,25 +111,33 @@ class Game:
             print(f"An error occurred: {str(e)}")
 
 
-    def update_objs(self):
+    def update_objs(self): 
         MOUSE_POS = pygame.mouse.get_pos()
-        for obj in self.objs:
-            if pygame.mouse.get_pressed()[0]:  # Left mouse button pressed
-                if obj.rect.collidepoint(MOUSE_POS):
-                    obj.update_position(MOUSE_POS)
-                    
-            if obj.rect.colliderect(pygame.Rect(MOUSE_POS[0],MOUSE_POS[1], 1, 1)):
-                obj.hover = True
-                self.make_more = False
-                break
+        mouse_pressed = pygame.mouse.get_pressed()[0]  # Check if the left mouse button is pressed
+
+        if self.active_obj is not None:
+            if mouse_pressed:
+                self.active_obj.update_position(MOUSE_POS)
             else:
-                obj.hover = False
-                self.make_more = True
+                self.active_obj = None
+        else:
+            self.make_more = True
+
+            for obj in self.objs:
+                if obj.rect.collidepoint(MOUSE_POS):
+                    self.make_more = False
+                    if mouse_pressed:
+                        self.active_obj = obj
+                        self.active_obj.active = True
+                        break
 
     def draw_window(self):
         window.fill(GRAY)
 
-        for obj in self.objs:
+        if self.active_obj != None:
+            self.active_obj.draw_on(window)
+
+        for obj in reversed(self.objs):
             obj.draw_on(window)
 
         pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
