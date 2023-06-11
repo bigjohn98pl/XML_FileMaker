@@ -16,6 +16,7 @@ class Block:
         self.id: str = f"{self.name}_{self.number}"
         self.hover = False
         self.press = False
+        self.active = False
         self.position = position
         self.size     = size
         self.color: Color     = MAP_COLOR[self.name] or WHITE
@@ -60,4 +61,4 @@ class Block:
         return NotImplemented
     
     def __str__(self) -> str:
-        return f"ID: {self.id}\n press: {self.press}\n hover: {self.hover}\n"
+        return f"ID: {self.id}\npress: {self.press}\nhover: {self.hover}\nactive: {self.active}\n"
