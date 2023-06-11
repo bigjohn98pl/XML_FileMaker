@@ -24,25 +24,29 @@ BUTTON_TEXT_COLOR = WHITE
 
 # Options for tk window
 OPTIONS = [
-    "testcasegroup",
-    "testcase",
     "parameter",
+    "testcase",
+    "testcasegroup",
+    "None",
     ] #etc
 SELECTED_OPTION = OPTIONS[0]
 BLOCK_SIZE = {
     "testcasegroup" : (200, 200),
     "testcase"      : (150, 50),
     "parameter"     : (100, 30),
+    "None"          : (1,1),
 }
 
 MAP_NAME = {
-    "testcasegroup" : 0,
+    "testcasegroup" : 2,
     "testcase"      : 1,
-    "parameter"     : 2,
+    "parameter"     : 0,
+    "None"          : 3,
 }
 MAP_COLOR = {
     "testcasegroup" : YELLOW,
     "testcase"      : RED_LIGHT,
     "parameter"     : BLUE,
+    "None"          : GRAY,
 }
-MOUSE_POS = []
+MOUSE_POS = (0,0)
