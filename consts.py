@@ -33,7 +33,7 @@ SELECTED_OPTION = OPTIONS[0]
 BLOCK_SIZE = {
     "testcasegroup" : (200, 200),
     "testcase"      : (150, 50),
-    "parameter"     : (100, 30),
+    "parameter"     : (120, 40),
     "None"          : (1,1),
 }
 
