@@ -23,7 +23,7 @@ class Block:
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
 
-        self.rect = pygame.Rect(position[0]-(size[0]/2),position[1]-size[1]/2,size[0],size[0])
+        self.rect = pygame.Rect(position[0]-(size[0]/2),position[1]-size[1]/2,size[0],size[1])
         self.text =  Block.font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
         self.text_rect.center = self.rect.center
@@ -37,9 +37,17 @@ class Block:
     def add_child(self, child_block):
         self.children.append(child_block)
     
-    def update_position(self,position: tuple[int,int]):
-        self.rect.center = position
-        self.text_rect.center = self.rect.center
+    def update_position(self, new_position: tuple[int, int]):
+        # Update the position of the block
+        child_position_offset = (new_position[0] - self.position[0], new_position[1] - self.position[1])
+        self.position = new_position
+        self.rect.center = self.position
+        self.text_rect.center = self.rect.topleft
+
+        # Update the position of child blocks relative to the new parent position
+        for child in self.children:
+            new_child_position = (self.position[0] + child_position_offset[0], self.position[1] + child_position_offset[1])
+            child.update_position(new_child_position)
 
     def draw_on(self,screen: pygame.Surface):
         pygame.draw.rect(screen,self.color, self.rect)
@@ -59,6 +67,7 @@ class Block:
         if isinstance(other, Block):
             return MAP_NAME[self.name]+self.count < MAP_NAME[other.name]+other.count
         return NotImplemented
-    
+
     def __str__(self) -> str:
-        return f"ID: {self.id}\npress: {self.press}\nhover: {self.hover}\nactive: {self.active}\n"
+        child_positions = '\n'.join(f"\tID: {child.id} pos:{child.position} rect:{child.rect}" for child in self.children)
+        return f"ID: {self.id}\nPress: {self.press}\nHover: {self.hover}\nActive: {self.active}\nRec: {self.rect}\nChildren:\n{child_positions}"

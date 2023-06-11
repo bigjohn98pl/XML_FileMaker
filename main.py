@@ -5,6 +5,7 @@ import tkinter as tk
 import tkinter.ttk as ttk
 import xml.dom.minidom as MD
 from typing import List
+from typing import Dict
 from typing import Optional
 import threading
 
@@ -38,6 +39,7 @@ class Game:
     def __init__(self):
         self.window: pygame.Surface = window
         self.objs: List[Block] = []
+        self.block_dict: Dict[str,Block] = {}
         self.active_obj: Optional[Block] = None
         self.make_more = True
         self.save_button_rect = pygame.Rect(
@@ -47,6 +49,12 @@ class Game:
             BUTTON_HEIGHT
         )
 
+    def __getitem__(self, item):
+        for obj in self.objs:
+            if obj.id == item:
+                return obj
+        raise KeyError(f"Object block with id '{item}' not found.")
+    
     def run(self):
         running = True
         while running:
@@ -55,20 +63,25 @@ class Game:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
-                        print(self.active_obj)
-                        if self.save_button_rect.collidepoint(event.pos):
-                            self.save_xml()
-                        else:
-                            if self.make_more:
-                                self.create_block(SELECTED_OPTION, event.pos)
+                        if pygame.mouse.get_pressed()[0]:
+                            os.system('cls')
+                            print(self.active_obj)
+                            if self.save_button_rect.collidepoint(event.pos):
+                                self.save_xml()
                             else:
-                                pass
+                                if self.make_more:
+                                    self.create_block(SELECTED_OPTION, event.pos)
+                                else:
+                                    pass
+                        elif pygame.mouse.get_pressed()[2]:
+                            os.system('cls')
+                            print(self.active_obj)
+                            print("======================")
+                            print(*self.objs)
+                        
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
-                        os.system('cls')
-                        print(self.active_obj)
-                        print("======================")
-                        print(*self.objs)
+                        pass
 
             self.update_objs()
             self.draw_window()
@@ -96,6 +109,7 @@ class Game:
         try:
             if name == SELECTED_OPTION:
                 block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
+                self.block_dict[block.id] = block
             else:
                 raise ValueError("Invalid block name.")
 
@@ -117,8 +131,16 @@ class Game:
 
         if self.active_obj is not None:
             if mouse_pressed:
+                self.active_obj.press = True
                 self.active_obj.update_position(MOUSE_POS)
             else:
+                self.active_obj.press = False
+                for obj in self.objs:
+                    if obj.rect.colliderect(self.active_obj.rect) and obj.id != self.active_obj.id:
+                        print(f"Add {self.active_obj.id} as a child to {obj.id}")
+                        obj.add_child(self.block_dict[self.active_obj.id])
+                        self.objs.remove(self.block_dict[self.active_obj.id])
+                        
                 self.active_obj = None
         else:
             self.make_more = True
@@ -126,10 +148,14 @@ class Game:
             for obj in self.objs:
                 if obj.rect.collidepoint(MOUSE_POS):
                     self.make_more = False
+                    obj.hover = True
                     if mouse_pressed:
                         self.active_obj = obj
                         self.active_obj.active = True
                         break
+                else:
+                    obj.hover = False
+
 
     def draw_window(self):
         window.fill(GRAY)
