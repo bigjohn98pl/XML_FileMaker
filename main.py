@@ -12,29 +12,6 @@ import threading
 from Block import Block
 from consts import *
 
-def button_clicked(variable):
-    print(variable.get())
-
-def set_parameters_for_obj():
-    set_window = tk.Tk()
-    set_window.geometry('200x100')
-    set_window.title("Block settings")
-    label_type = tk.Label(text="Block Type:")
-
-    variable = tk.StringVar(set_window)
-    variable.set(OPTIONS[0])
-    menu_type = tk.OptionMenu(set_window,variable,*OPTIONS)
-    button_ok = tk.Button(set_window,text="OK",command=lambda: button_clicked(variable))
-    value_in = tk.Label(text="Value in:")
-    
-    label_type.pack()
-    value_in.pack()
-    menu_type.pack()
-    button_ok.pack()
-
-    set_window.mainloop()
-    return variable.get()
-
 class Game:
     def __init__(self):
         self.window: pygame.Surface = window
