@@ -135,19 +135,19 @@ class Game:
 
 
     def draw_window(self):
-        window.fill(GRAY)
+        self.window.fill(GRAY)
 
         if self.active_obj != None:
-            self.active_obj.draw_on(window)
+            self.active_obj.draw_on(self.window)
 
         for obj in reversed(self.objs):
-            obj.draw_on(window)
+            obj.draw_on(self.window)
 
-        pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
+        pygame.draw.rect(self.window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)
         save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
         save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
-        window.blit(save_text, save_text_rect)
+        self.window.blit(save_text, save_text_rect)
 
         pygame.display.flip()
 
@@ -157,6 +157,7 @@ def chose_option(chose):
 
 def pygame_thread_obj():
     print("pygame_thread_obj")
+    pygame.display.init()
     game = Game()
     game.run()
 
@@ -174,7 +175,7 @@ def main():
     global window
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     window.fill(pygame.Color(255, 255, 255))
-    pygame.display.init()
+
     button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: chose_option(0))
     button1.pack(side=tk.TOP)
     button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: chose_option(1))
