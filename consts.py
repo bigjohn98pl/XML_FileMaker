@@ -29,6 +29,12 @@ OPTIONS = [
     "testcasegroup",
     "None",
     ] #etc
+OPTIONS_NUM = {
+    0 : OPTIONS[0],
+    1 : OPTIONS[1],
+    2 : OPTIONS[2],
+    3 : OPTIONS[3],
+ } #etc
 SELECTED_OPTION = OPTIONS[0]
 BLOCK_SIZE = {
     "testcasegroup" : (200, 200),

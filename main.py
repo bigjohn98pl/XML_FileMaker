@@ -1,5 +1,4 @@
 import os
-import sys
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -8,6 +7,8 @@ from typing import List
 from typing import Dict
 from typing import Optional
 import threading
+import queue
+from queue import Empty
 
 from Block import Block
 from consts import *
@@ -19,6 +20,7 @@ class Game:
         self.block_dict: Dict[str,Block] = {}
         self.active_obj: Optional[Block] = None
         self.make_more = True
+        self.selected_option = OPTIONS[0]
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
             WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
@@ -35,26 +37,35 @@ class Game:
     def run(self):
         running = True
         while running:
+            try:
+                message = message_queue.get_nowait()
+                # Process the message as needed
+                if isinstance(message, dict) and "action" in message:
+                    if message["action"] == "update_option":
+                        self.selected_option = message["selected_option"]
+                        print("queueue {x}".format(x=message))
+                # Handle other message types if needed
+            except queue.Empty:
+                pass
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if pygame.mouse.get_pressed()[0]:
-                            os.system('cls')
-                            print(self.active_obj)
                             if self.save_button_rect.collidepoint(event.pos):
                                 self.save_xml()
                             else:
                                 if self.make_more:
-                                    self.create_block(SELECTED_OPTION, event.pos)
+                                    self.create_block(self.selected_option, event.pos)
                                 else:
                                     pass
                         elif pygame.mouse.get_pressed()[2]:
-                            os.system('cls')
-                            print(self.active_obj)
-                            print("======================")
-                            print(*self.objs)
+                            # os.system('cls')
+                            # print(self.active_obj)
+                            # print("======================")
+                            # print(*self.objs)
+                            print(f"{self.selected_option}")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -84,11 +95,11 @@ class Game:
 
     def create_block(self, name, pos):
         try:
-            if name == SELECTED_OPTION:
+            if name in OPTIONS:
                 block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
                 self.block_dict[block.id] = block
             else:
-                raise ValueError("Invalid block name.")
+                raise ValueError(f"Invalid block name {name}.")
 
             block.add_param("pos",str(pos))
             self.active_obj = block
@@ -151,10 +162,19 @@ class Game:
 
         pygame.display.flip()
 
-def chose_option(chose):
-    global SELECTED_OPTION
-    SELECTED_OPTION = OPTIONS[chose]
+# Create a queue for communication
+message_queue = queue.Queue(10)
+# Function to update the variables of the Game object
+def update_option(option):
+    # Update the variables of the Game object here
+    message_queue.put({"action": "update_option", "selected_option": OPTIONS[option]})
+    print({OPTIONS[option]})
 
+# Function to send a message to the game thread
+def send_message(message):
+    message_queue.put(message)
+
+# Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
     pygame.display.init()
@@ -176,11 +196,11 @@ def main():
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     window.fill(pygame.Color(255, 255, 255))
 
-    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: chose_option(0))
+    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: update_option(0))
     button1.pack(side=tk.TOP)
-    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: chose_option(1))
+    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: update_option(1))
     button2.pack(side=tk.TOP)
-    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: chose_option(2))
+    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: update_option(2))
     button3.pack(side=tk.TOP)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
