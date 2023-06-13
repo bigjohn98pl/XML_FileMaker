@@ -7,9 +7,6 @@ from typing import List
 from typing import Dict
 from typing import Optional
 import threading
-import queue
-from queue import Empty
-
 from Block import Block
 from consts import *
 
@@ -37,16 +34,7 @@ class Game:
     def run(self):
         running = True
         while running:
-            try:
-                message = message_queue.get_nowait()
-                # Process the message as needed
-                if isinstance(message, dict) and "action" in message:
-                    if message["action"] == "update_option":
-                        self.selected_option = message["selected_option"]
-                        print("queueue {x}".format(x=message))
-                # Handle other message types if needed
-            except queue.Empty:
-                pass
+            queue_event_handle(self)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
@@ -161,18 +149,6 @@ class Game:
         self.window.blit(save_text, save_text_rect)
 
         pygame.display.flip()
-
-# Create a queue for communication
-message_queue = queue.Queue(10)
-# Function to update the variables of the Game object
-def update_option(option):
-    # Update the variables of the Game object here
-    message_queue.put({"action": "update_option", "selected_option": OPTIONS[option]})
-    print({OPTIONS[option]})
-
-# Function to send a message to the game thread
-def send_message(message):
-    message_queue.put(message)
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():

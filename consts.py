@@ -1,4 +1,5 @@
 from typing import Literal, Tuple
+import queue
 Color = Tuple[int, int, int]
 
 # Colors
@@ -56,3 +57,30 @@ MAP_COLOR = {
     "None"          : GRAY,
 }
 MOUSE_POS = (0,0)
+
+# Create a queue for communication
+GUI_QUEUE = queue.Queue(10)
+
+# Function to update the variables of the Game object
+def update_option(option):
+    # Update the variables of the Game object here
+    GUI_QUEUE.put({"action": "update_option", "selected_option": OPTIONS[option]})
+    print({OPTIONS[option]})
+
+# Function to send a message to the game thread
+def send_message(message):
+    GUI_QUEUE.put(message)
+
+def queue_event_handle(object):
+    try:
+        message = GUI_QUEUE.get_nowait()
+        # Process the message as needed
+        if isinstance(message, dict) and "action" in message:
+            if message["action"] == "update_option":
+                object.selected_option = message["selected_option"]
+                print("queueue {x}".format(x=message))
+        # Handle other message types if needed
+    except queue.Empty:
+        pass
+    except queue.Full:
+        pass
