@@ -112,7 +112,7 @@ class Game:
             else:
                 self.active_obj.press = False
                 for obj in self.objs:
-                    if obj.rect.colliderect(self.active_obj.rect) and obj.id != self.active_obj.id:
+                    if obj.rect.contains(self.active_obj.rect) and obj.id != self.active_obj.id:
                         print(f"Add {self.active_obj.id} as a child to {obj.id}")
                         obj.add_child(self.block_dict[self.active_obj.id])
                         self.objs.remove(self.block_dict[self.active_obj.id])
