@@ -2,13 +2,10 @@ from consts import *
 import pygame
 import ast
 from typing import List
-
 pygame.font.init()
-
 class Block:
     count: int = 0  # Class variable to keep track of the block count
-    font = pygame.font.Font('freesansbold.ttf', 32)
-
+    font_size: int = 20
     def __init__(self, name: str,text: str, position: tuple[int,int],size: tuple[int,int]):
         Block.count += 1
         self.number: int = Block.count
@@ -24,10 +21,11 @@ class Block:
         
 
         self.rect = pygame.Rect(position[0]-(size[0]/2),position[1]-size[1]/2,size[0],size[1])
-        self.text =  Block.font.render(text, True, BLACK, self.dim_color)
+        self.scaled_font = self.scale_font_size(self.rect,self.size)
+        self.text =  self.scaled_font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
-        self.text_rect.center = self.rect.center
-
+        self.text_rect.midleft = self.rect.topleft
+        self.text_rect.x -= 10
         self.params = {}
         self.children: List[Block] = []
 
@@ -42,8 +40,8 @@ class Block:
         child_position_offset = (new_position[0] - self.position[0], new_position[1] - self.position[1])
         self.position = new_position
         self.rect.center = self.position
-        self.text_rect.center = self.rect.topleft
-
+        self.text_rect.midleft = self.rect.topleft
+        self.text_rect.x -= 10
         # Update the position of child blocks relative to the new parent position
         for child in self.children:
             new_child_position = (self.position[0] + child_position_offset[0], self.position[1] + child_position_offset[1])
@@ -55,6 +53,19 @@ class Block:
         for child in self.children:
             child.draw_on(screen)
 
+    def scale_font_size(self, rect: pygame.Rect, reference_size) -> pygame.font.Font:
+        # Calculate the scaling factor based on the width and height ratios
+        # width_ratio =  rect.width / Block.font_size
+        # height_ratio = rect.height / Block.font_size
+        # scaling_factor = min(width_ratio, height_ratio)
+
+        # Scale the font size based on the scaling factor
+        # scaled_font_size = int(Block.font_size * scaling_factor)
+
+        # Create a new font with the scaled font size
+        scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
+        return scaled_font
+    
     def get_count(self):
         return self.count
 
