@@ -1,8 +1,5 @@
 import pygame
 import xml.dom.minidom as MD
-from typing import List
-from typing import Dict
-from typing import Optional
 import threading
 from Block import Block
 from consts import *
@@ -16,8 +13,8 @@ class Game:
         self.make_more = True
         self.selected_option = OPTIONS[0]
         self.save_button_rect = pygame.Rect(
-            WINDOW_WIDTH - BUTTON_WIDTH - 10,
-            WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
+            PY_WINDOW_WIDTH - BUTTON_WIDTH - 10,
+            PY_WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
             BUTTON_WIDTH,
             BUTTON_HEIGHT
         )
@@ -125,6 +122,7 @@ class Game:
                     if mouse_pressed:
                         self.active_obj = obj
                         self.active_obj.active = True
+                        update_gui(self.active_obj)
                         break
                 else:
                     obj.hover = False
@@ -147,6 +145,11 @@ class Game:
 
         pygame.display.flip()
 
+def update_gui(object: Block):
+    # Update the variables of the Game object here
+    GUI_QUEUE.put({"action": "update_gui", "id": object.id,"position": object.position})
+    print({object.id})
+
 # Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
@@ -157,7 +160,7 @@ def pygame_thread_obj():
 def main():
     gui_window = TkinterGui()
     global window
-    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
+    window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
     window.fill(BLACK)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)

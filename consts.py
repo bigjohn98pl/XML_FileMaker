@@ -1,4 +1,7 @@
 from typing import Literal, Tuple
+from typing import List
+from typing import Dict
+from typing import Optional
 import queue
 Color = Tuple[int, int, int]
 
@@ -13,10 +16,18 @@ GREEN: Color       = (46, 184, 46)
 YELLOW: Color      = (255, 204, 102)
 PURPLE: Color      = (255, 0, 255)
 DIM_FACTOR = 0.85
-# Set up the window dimensions
-WINDOW_WIDTH    = 800
-WINDOW_HEIGHT   = 600
 
+MAP_COLOR = {
+    "testcasegroup" : YELLOW,
+    "testcase"      : RED_LIGHT,
+    "parameter"     : BLUE,
+    "None"          : GRAY,
+}
+# Set up the window dimensions
+PY_WINDOW_WIDTH    = 600
+PY_WINDOW_HEIGHT   = 600
+GUI_WINDOW_WIDTH    = 1000
+GUI_WINDOW_HEIGHT   = 600
 # Button parameters
 BUTTON_WIDTH    = 100
 BUTTON_HEIGHT   = 30
@@ -44,44 +55,36 @@ BLOCK_SIZE = {
     "parameter"     : (120, 40),
     "None"          : (1,1),
 }
-MARGIN = 10
-X_MARGIN = 20
-TOP_MARGIN = 30
 MAP_NAME = {
     "testcasegroup" : 2,
     "testcase"      : 1,
     "parameter"     : 0,
     "None"          : 3,
 }
-MAP_COLOR = {
-    "testcasegroup" : YELLOW,
-    "testcase"      : RED_LIGHT,
-    "parameter"     : BLUE,
-    "None"          : GRAY,
-}
-MOUSE_POS = (0,0)
 
+MARGIN = 10
+X_MARGIN = 20
+TOP_MARGIN = 30
+
+MOUSE_POS = (0,0)
 # Create a queue for communication
+PY_QUEUE = queue.Queue(10)
 GUI_QUEUE = queue.Queue(10)
 
 # Function to update the variables of the Game object
 def update_option(option):
     # Update the variables of the Game object here
-    GUI_QUEUE.put({"action": "update_option", "selected_option": OPTIONS[option]})
+    PY_QUEUE.put({"action": "update_option", "selected_option": OPTIONS[option]})
     print({OPTIONS[option]})
-
-# Function to send a message to the game thread
-def send_message(message):
-    GUI_QUEUE.put(message)
 
 def queue_event_handle(object):
     try:
-        message = GUI_QUEUE.get_nowait()
+        message = PY_QUEUE.get_nowait()
         # Process the message as needed
         if isinstance(message, dict) and "action" in message:
             if message["action"] == "update_option":
                 object.selected_option = message["selected_option"]
-                print("queueue {x}".format(x=message))
+                print(f"queueue {message}")
         # Handle other message types if needed
     except queue.Empty:
         pass
