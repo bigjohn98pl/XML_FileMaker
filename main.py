@@ -1,5 +1,4 @@
 import os
-import sys
 import pygame
 import tkinter as tk
 import tkinter.ttk as ttk
@@ -8,32 +7,8 @@ from typing import List
 from typing import Dict
 from typing import Optional
 import threading
-
 from Block import Block
 from consts import *
-
-def button_clicked(variable):
-    print(variable.get())
-
-def set_parameters_for_obj():
-    set_window = tk.Tk()
-    set_window.geometry('200x100')
-    set_window.title("Block settings")
-    label_type = tk.Label(text="Block Type:")
-
-    variable = tk.StringVar(set_window)
-    variable.set(OPTIONS[0])
-    menu_type = tk.OptionMenu(set_window,variable,*OPTIONS)
-    button_ok = tk.Button(set_window,text="OK",command=lambda: button_clicked(variable))
-    value_in = tk.Label(text="Value in:")
-    
-    label_type.pack()
-    value_in.pack()
-    menu_type.pack()
-    button_ok.pack()
-
-    set_window.mainloop()
-    return variable.get()
 
 class Game:
     def __init__(self):
@@ -42,6 +17,7 @@ class Game:
         self.block_dict: Dict[str,Block] = {}
         self.active_obj: Optional[Block] = None
         self.make_more = True
+        self.selected_option = OPTIONS[0]
         self.save_button_rect = pygame.Rect(
             WINDOW_WIDTH - BUTTON_WIDTH - 10,
             WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
@@ -58,26 +34,23 @@ class Game:
     def run(self):
         running = True
         while running:
+            queue_event_handle(self)
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if pygame.mouse.get_pressed()[0]:
-                            os.system('cls')
-                            print(self.active_obj)
                             if self.save_button_rect.collidepoint(event.pos):
                                 self.save_xml()
                             else:
                                 if self.make_more:
-                                    self.create_block(SELECTED_OPTION, event.pos)
+                                    self.create_block(self.selected_option, event.pos)
                                 else:
                                     pass
                         elif pygame.mouse.get_pressed()[2]:
                             os.system('cls')
-                            print(self.active_obj)
-                            print("======================")
-                            print(*self.objs)
+                            print(f"{pygame.mouse.get_pos()}")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -107,11 +80,11 @@ class Game:
 
     def create_block(self, name, pos):
         try:
-            if name == SELECTED_OPTION:
+            if name in OPTIONS:
                 block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
                 self.block_dict[block.id] = block
             else:
-                raise ValueError("Invalid block name.")
+                raise ValueError(f"Invalid block name {name}.")
 
             block.add_param("pos",str(pos))
             self.active_obj = block
@@ -136,9 +109,12 @@ class Game:
             else:
                 self.active_obj.press = False
                 for obj in self.objs:
-                    if obj.rect.colliderect(self.active_obj.rect) and obj.id != self.active_obj.id:
+                    if obj.rect.contains(self.active_obj.rect) and obj.id != self.active_obj.id:
                         print(f"Add {self.active_obj.id} as a child to {obj.id}")
+                        if len(obj.children) == 0:
+                            obj.rect.h = TOP_MARGIN    
                         obj.add_child(self.block_dict[self.active_obj.id])
+                        obj.update_chldren_positions()
                         self.objs.remove(self.block_dict[self.active_obj.id])
                         
                 self.active_obj = None
@@ -158,28 +134,26 @@ class Game:
 
 
     def draw_window(self):
-        window.fill(GRAY)
+        self.window.fill(GRAY)
 
         if self.active_obj != None:
-            self.active_obj.draw_on(window)
+            self.active_obj.draw_on(self.window)
 
         for obj in reversed(self.objs):
-            obj.draw_on(window)
+            obj.draw_on(self.window)
 
-        pygame.draw.rect(window, BUTTON_COLOR, self.save_button_rect)
+        pygame.draw.rect(self.window, BUTTON_COLOR, self.save_button_rect)
         save_font = pygame.font.Font(None, 24)
         save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
         save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
-        window.blit(save_text, save_text_rect)
+        self.window.blit(save_text, save_text_rect)
 
         pygame.display.flip()
 
-def chose_option(chose):
-    global SELECTED_OPTION
-    SELECTED_OPTION = OPTIONS[chose]
-
+# Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
+    pygame.display.init()
     game = Game()
     game.run()
 
@@ -197,12 +171,12 @@ def main():
     global window
     window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
     window.fill(pygame.Color(255, 255, 255))
-    pygame.display.init()
-    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: chose_option(0))
+
+    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: update_option(0))
     button1.pack(side=tk.TOP)
-    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: chose_option(1))
+    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: update_option(1))
     button2.pack(side=tk.TOP)
-    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: chose_option(2))
+    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: update_option(2))
     button3.pack(side=tk.TOP)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
