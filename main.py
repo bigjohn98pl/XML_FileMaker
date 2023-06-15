@@ -49,11 +49,8 @@ class Game:
                                 else:
                                     pass
                         elif pygame.mouse.get_pressed()[2]:
-                            # os.system('cls')
-                            # print(self.active_obj)
-                            # print("======================")
-                            # print(*self.objs)
-                            print(f"{self.selected_option}")
+                            os.system('cls')
+                            print(f"{pygame.mouse.get_pos()}")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -114,7 +111,10 @@ class Game:
                 for obj in self.objs:
                     if obj.rect.contains(self.active_obj.rect) and obj.id != self.active_obj.id:
                         print(f"Add {self.active_obj.id} as a child to {obj.id}")
+                        if len(obj.children) == 0:
+                            obj.rect.h = TOP_MARGIN    
                         obj.add_child(self.block_dict[self.active_obj.id])
+                        obj.update_chldren_positions()
                         self.objs.remove(self.block_dict[self.active_obj.id])
                         
                 self.active_obj = None

@@ -20,7 +20,7 @@ class Block:
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
 
-        self.rect = pygame.Rect(position[0]-(size[0]/2),position[1]-size[1]/2,size[0],size[1])
+        self.rect = pygame.Rect(position[0],position[1],size[0],size[1])
         self.scaled_font = self.scale_font_size(self.rect,self.size)
         self.text =  self.scaled_font.render(text, True, BLACK, self.dim_color)
         self.text_rect  = self.text.get_rect()
@@ -33,19 +33,40 @@ class Block:
         self.params[key] = value
 
     def add_child(self, child_block):
-        self.children.append(child_block)
+        if isinstance(child_block, Block):
+            self.children.append(child_block)
+            self.rect.h += child_block.rect.h + MARGIN
+        else:
+            raise ValueError("Invalid child block. Expected instance of Block class.")
+
+    def remove_last_child(self):
+        child = self.children.pop()
+        self.rect.h -= child.rect.h + MARGIN
     
     def update_position(self, new_position: tuple[int, int]):
-        # Update the position of the block
+        # Calculate the position offset
         child_position_offset = (new_position[0] - self.position[0], new_position[1] - self.position[1])
+
+        # Update the position of the block
         self.position = new_position
-        self.rect.center = self.position
+        self.rect.topleft = self.position
         self.text_rect.midleft = self.rect.topleft
         self.text_rect.x -= 10
+
         # Update the position of child blocks relative to the new parent position
+        y_offset = self.rect.top + TOP_MARGIN  # Start with an offset below the parent block
         for child in self.children:
-            new_child_position = (self.position[0] + child_position_offset[0], self.position[1] + child_position_offset[1])
+            new_child_position = (self.position[0] + child_position_offset[0] + X_MARGIN, y_offset)
             child.update_position(new_child_position)
+            y_offset += child.rect.height + MARGIN  # Increment the offset for the next child block
+    
+    def update_chldren_positions(self):
+        child_position_offset = (self.position[0] - self.position[0], self.position[1] - self.position[1])
+        y_offset = self.rect.top + TOP_MARGIN
+        for child in self.children:
+            new_child_position = (self.position[0] + child_position_offset[0] + X_MARGIN, y_offset)
+            child.update_position(new_child_position)
+            y_offset += child.rect.height + MARGIN  # Increment the offset for the next child block
 
     def draw_on(self,screen: pygame.Surface):
         pygame.draw.rect(screen,self.color, self.rect)

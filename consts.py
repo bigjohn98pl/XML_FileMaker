@@ -11,7 +11,7 @@ RED_LIGHT: Color   = (255, 77, 77)
 BLUE: Color        = (102, 204, 255)
 GREEN: Color       = (46, 184, 46)
 YELLOW: Color      = (255, 204, 102)
-
+PURPLE: Color      = (255, 0, 255)
 DIM_FACTOR = 0.85
 # Set up the window dimensions
 WINDOW_WIDTH    = 800
@@ -37,13 +37,16 @@ OPTIONS_NUM = {
     3 : OPTIONS[3],
  } #etc
 SELECTED_OPTION = OPTIONS[0]
+
 BLOCK_SIZE = {
     "testcasegroup" : (200, 200),
     "testcase"      : (150, 50),
     "parameter"     : (120, 40),
     "None"          : (1,1),
 }
-
+MARGIN = 10
+X_MARGIN = 20
+TOP_MARGIN = 30
 MAP_NAME = {
     "testcasegroup" : 2,
     "testcase"      : 1,
