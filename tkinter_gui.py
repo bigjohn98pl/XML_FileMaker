@@ -17,12 +17,16 @@ class TkinterGui:
         self.box.columnconfigure(0, weight=1)
         self.box.columnconfigure(1, weight=3)
         self.box.grid(column=1,row=0,sticky="nwsw")
+        self.box.configure()
         
 
         # self.lab_id = self.set_label("ID:",0,0)
         # self.id_value = self.set_enter("None:",0,1)
-        (self.lab_id,self.id_value) = self.set_lab_and_enter("ID",0,0)
-        (self.lab_position,self.position_value) = self.set_lab_and_enter("Position",1,0)
+        (self.lab_id,self.id_value) = self.set_lab_and_enter("ID:",0,0)
+        (self.lab_position,self.position_value) = self.set_lab_and_enter("Position:",1,0)
+        (self.lab_hover,self.hover_value) = self.set_lab_and_enter("Hover:",2,0)
+        (self.lab_press,self.press_value) = self.set_lab_and_enter("Press:",3,0)
+        (self.lab_size,self.size_value) = self.set_lab_and_enter("Size:",4,0)
         # self.lab_position = self.set_label("Position:",1,0)
         # self.position_value = self.set_enter("Children:",1,1)
         self.button1 = self.set_button(0,5,0)
@@ -36,17 +40,16 @@ class TkinterGui:
         self.root.mainloop()
     
     def set_button(self,option,_row=0,_col=0):
-        button = tk.Button(self.box, text=OPTIONS[option], command=lambda: update_option(option))
-        button.grid(column=_col,row=_row,padx=10,pady=3,sticky=tk.S)
+        button = tk.Button(self.box, text=OPTIONS[option].upper(), command=lambda: update_option(option))
+        button.grid(column=_col,row=_row,padx=10,pady=3,sticky="nsew")
         return button
     def set_label(self,_text,_row=0,_col=0):
-        label = tk.Label(self.box,text=_text)
-        label.grid(column=_col,row=_row,padx=0,pady=0)
+        label = tk.Label(self.box,text=_text,relief="groove")
+        label.grid(column=_col,row=_row,padx=0,pady=0,sticky="nsew")
         return label
     def set_enter(self,_row=0,_col=0):
         entry = ttk.Entry(self.box)
         entry.grid(column=_col, row=_row, sticky=tk.E, padx=0, pady=0)
-        entry
         return entry
     def set_lab_and_enter(self,_text,_row=0,_col=0):
         label = self.set_label(_text,_row,_col)
@@ -63,6 +66,12 @@ class TkinterGui:
                     self.id_value.insert(0,message["id"])
                     self.position_value.delete(0, tk.END)
                     self.position_value.insert(0,message["position"])
+                    self.hover_value.delete(0, tk.END)
+                    self.hover_value.insert(0,message["hover"])
+                    self.press_value.delete(0, tk.END)
+                    self.press_value.insert(0,message["press"])
+                    self.size_value.delete(0, tk.END)
+                    self.size_value.insert(0,message["size"])
                     print("queueue {x}".format(x=message))
             # Handle other message types if needed
         except queue.Empty:
