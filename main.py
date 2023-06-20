@@ -1,14 +1,9 @@
-import os
 import pygame
-import tkinter as tk
-import tkinter.ttk as ttk
 import xml.dom.minidom as MD
-from typing import List
-from typing import Dict
-from typing import Optional
 import threading
 from Block import Block
 from consts import *
+from tkinter_gui import *
 
 class Game:
     def __init__(self):
@@ -18,12 +13,6 @@ class Game:
         self.active_obj: Optional[Block] = None
         self.make_more = True
         self.selected_option = OPTIONS[0]
-        self.save_button_rect = pygame.Rect(
-            WINDOW_WIDTH - BUTTON_WIDTH - 10,
-            WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT
-        )
 
     def __getitem__(self, item):
         for obj in self.objs:
@@ -41,15 +30,12 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if pygame.mouse.get_pressed()[0]:
-                            if self.save_button_rect.collidepoint(event.pos):
-                                self.save_xml()
+                            if self.make_more:
+                                self.create_block(self.selected_option, event.pos)
                             else:
-                                if self.make_more:
-                                    self.create_block(self.selected_option, event.pos)
-                                else:
-                                    pass
+                                pass
                         elif pygame.mouse.get_pressed()[2]:
-                            os.system('cls')
+                            # os.system('cls')
                             print(f"{pygame.mouse.get_pos()}")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
@@ -128,6 +114,7 @@ class Game:
                     if mouse_pressed:
                         self.active_obj = obj
                         self.active_obj.active = True
+                        update_gui(self.active_obj)
                         break
                 else:
                     obj.hover = False
@@ -141,49 +128,33 @@ class Game:
 
         for obj in reversed(self.objs):
             obj.draw_on(self.window)
-
-        pygame.draw.rect(self.window, BUTTON_COLOR, self.save_button_rect)
-        save_font = pygame.font.Font(None, 24)
-        save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
-        save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
-        self.window.blit(save_text, save_text_rect)
-
         pygame.display.flip()
+
+def update_gui(object: Block):
+    # Update the variables of the Game object here
+    GUI_QUEUE.put({"action": "update_gui", "id": object.id,"position": object.position})
+    print({object.id})
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
     pygame.display.init()
     game = Game()
+    gui_window.set_window(game)
     game.run()
 
 def main():
-    root = tk.Tk()
-    embed = tk.Frame(root, width=WINDOW_WIDTH, height=WINDOW_HEIGHT)
-    embed.grid(columnspan=600, rowspan=500)
-    embed.pack(side=tk.LEFT)
-    buttonwin = tk.Frame(root, width=75, height=WINDOW_HEIGHT)
-    buttonwin.pack(side=tk.LEFT)
-
-    os.environ['SDL_WINDOWID'] = str(embed.winfo_id())
-    os.environ['SDL_VIDEODRIVER'] = 'windib'
-
+    global gui_window
+    gui_window = TkinterGui()
     global window
-    window = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-    window.fill(pygame.Color(255, 255, 255))
-
-    button1 = tk.Button(buttonwin, text=OPTIONS[0], command=lambda: update_option(0))
-    button1.pack(side=tk.TOP)
-    button2 = tk.Button(buttonwin, text=OPTIONS[1], command=lambda: update_option(1))
-    button2.pack(side=tk.TOP)
-    button3 = tk.Button(buttonwin, text=OPTIONS[2], command=lambda: update_option(2))
-    button3.pack(side=tk.TOP)
+    window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
+    window.fill(BLACK)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
     pygame_thread.daemon = True
     pygame_thread.start()
 
-    root.mainloop()
+    gui_window.run_gui()
 
 if __name__ == "__main__":
     print("mian start")
