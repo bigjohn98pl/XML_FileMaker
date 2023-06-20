@@ -62,10 +62,13 @@ MAP_NAME = {
     "None"          : 3,
 }
 
-MARGIN = 10
-X_MARGIN = 20
-TOP_MARGIN = 30
-
+MARGIN :int = 10
+X_MARGIN :int= 20
+TOP_MARGIN :int = 30
+PADDING_LABEL_X = (5,0)
+PADDING_LABEL_Y = (5,0)
+PADDING_ENTER_X = (0,5)
+PADDING_ENTER_Y = (5,0)
 MOUSE_POS = (0,0)
 # Create a queue for communication
 PY_QUEUE = queue.Queue(10)
