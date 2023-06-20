@@ -55,12 +55,20 @@ BLOCK_SIZE = {
     "parameter"     : (120, 40),
     "None"          : (1,1),
 }
+
 MAP_NAME = {
     "testcasegroup" : 2,
     "testcase"      : 1,
     "parameter"     : 0,
     "None"          : 3,
 }
+MAP_COLOR = {
+    "testcasegroup" : YELLOW,
+    "testcase"      : RED_LIGHT,
+    "parameter"     : BLUE,
+    "None"          : GRAY,
+}
+MOUSE_POS = (0,0)
 
 MARGIN :int = 10
 X_MARGIN :int= 20
@@ -69,9 +77,9 @@ PADDING_LABEL_X = (5,0)
 PADDING_LABEL_Y = (5,0)
 PADDING_ENTER_X = (0,5)
 PADDING_ENTER_Y = (5,0)
-MOUSE_POS = (0,0)
+
+
 # Create a queue for communication
-PY_QUEUE = queue.Queue(10)
 GUI_QUEUE = queue.Queue(10)
 
 # Function to update the variables of the Game object
@@ -87,7 +95,7 @@ def queue_event_handle(object):
         if isinstance(message, dict) and "action" in message:
             if message["action"] == "update_option":
                 object.selected_option = message["selected_option"]
-                print(f"queueue {message}")
+                print("queueue {x}".format(x=message))
         # Handle other message types if needed
     except queue.Empty:
         pass

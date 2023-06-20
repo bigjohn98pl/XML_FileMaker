@@ -4,6 +4,7 @@ import threading
 from Block import Block
 from consts import *
 from tkinter_gui import *
+
 class Game:
     def __init__(self):
         self.window: pygame.Surface = window
@@ -127,7 +128,6 @@ class Game:
 
         for obj in reversed(self.objs):
             obj.draw_on(self.window)
-
         pygame.display.flip()
 
 def update_gui(object: Block):
