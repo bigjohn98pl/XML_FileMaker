@@ -15,7 +15,7 @@ class Block:
         self.press = False
         self.active = False
         self.position = position
-        self.size     = size
+        self.size: tuple[int,int] = size
         self.color: Color     = MAP_COLOR[self.name] or WHITE
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
@@ -36,12 +36,14 @@ class Block:
         if isinstance(child_block, Block):
             self.children.append(child_block)
             self.rect.h += child_block.rect.h + MARGIN
+            self.size = self.rect.size
         else:
             raise ValueError("Invalid child block. Expected instance of Block class.")
 
     def remove_last_child(self):
         child = self.children.pop()
         self.rect.h -= child.rect.h + MARGIN
+        self.size = self.rect.size
     
     def update_position(self, new_position: tuple[int, int]):
         # Calculate the position offset
@@ -59,6 +61,7 @@ class Block:
             new_child_position = (self.position[0] + child_position_offset[0] + X_MARGIN, y_offset)
             child.update_position(new_child_position)
             y_offset += child.rect.height + MARGIN  # Increment the offset for the next child block
+        self.size = self.rect.size
     
     def update_chldren_positions(self):
         child_position_offset = (self.position[0] - self.position[0], self.position[1] - self.position[1])
@@ -67,6 +70,7 @@ class Block:
             new_child_position = (self.position[0] + child_position_offset[0] + X_MARGIN, y_offset)
             child.update_position(new_child_position)
             y_offset += child.rect.height + MARGIN  # Increment the offset for the next child block
+        self.size = self.rect.size
 
     def draw_on(self,screen: pygame.Surface):
         pygame.draw.rect(screen,self.color, self.rect)
