@@ -147,7 +147,13 @@ class Game:
 
 def update_gui(object: Block):
     # Update the variables of the Game object here
-    GUI_QUEUE.put({"action": "update_gui", "id": object.id,"position": object.position})
+    GUI_QUEUE.put({"action": "update_gui", 
+                   "id": object.id,
+                   "position": object.position,
+                   "hover": object.hover,
+                   "press": object.press,
+                   "size": object.size
+                   })
     print({object.id})
 
 # Function to run the game in a separate thread
