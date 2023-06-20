@@ -3,7 +3,7 @@ import xml.dom.minidom as MD
 import threading
 from Block import Block
 from consts import *
-from tkinter_gui import TkinterGui
+from tkinter_gui import *
 class Game:
     def __init__(self):
         self.window: pygame.Surface = window
@@ -144,17 +144,6 @@ class Game:
         self.window.blit(save_text, save_text_rect)
 
         pygame.display.flip()
-
-def update_gui(object: Block):
-    # Update the variables of the Game object here
-    GUI_QUEUE.put({"action": "update_gui", 
-                   "id": object.id,
-                   "position": object.position,
-                   "hover": object.hover,
-                   "press": object.press,
-                   "size": object.size
-                   })
-    print({object.id})
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():
