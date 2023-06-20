@@ -130,6 +130,11 @@ class Game:
 
         pygame.display.flip()
 
+def update_gui(object: Block):
+    # Update the variables of the Game object here
+    GUI_QUEUE.put({"action": "update_gui", "id": object.id,"position": object.position})
+    print({object.id})
+
 # Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
