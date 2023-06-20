@@ -3,7 +3,7 @@ import xml.dom.minidom as MD
 import threading
 from Block import Block
 from consts import *
-from tkinter_gui import TkinterGui
+from tkinter_gui import *
 class Game:
     def __init__(self):
         self.window: pygame.Surface = window
@@ -12,12 +12,6 @@ class Game:
         self.active_obj: Optional[Block] = None
         self.make_more = True
         self.selected_option = OPTIONS[0]
-        self.save_button_rect = pygame.Rect(
-            PY_WINDOW_WIDTH - BUTTON_WIDTH - 10,
-            PY_WINDOW_HEIGHT - BUTTON_HEIGHT - 10,
-            BUTTON_WIDTH,
-            BUTTON_HEIGHT
-        )
 
     def __getitem__(self, item):
         for obj in self.objs:
@@ -35,13 +29,10 @@ class Game:
                 elif event.type == pygame.MOUSEBUTTONDOWN:
                     if pygame.MOUSEBUTTONDOWN:  # Left mouse button
                         if pygame.mouse.get_pressed()[0]:
-                            if self.save_button_rect.collidepoint(event.pos):
-                                self.save_xml()
+                            if self.make_more:
+                                self.create_block(self.selected_option, event.pos)
                             else:
-                                if self.make_more:
-                                    self.create_block(self.selected_option, event.pos)
-                                else:
-                                    pass
+                                pass
                         elif pygame.mouse.get_pressed()[2]:
                             # os.system('cls')
                             print(f"{pygame.mouse.get_pos()}")
@@ -137,12 +128,6 @@ class Game:
         for obj in reversed(self.objs):
             obj.draw_on(self.window)
 
-        pygame.draw.rect(self.window, BUTTON_COLOR, self.save_button_rect)
-        save_font = pygame.font.Font(None, 24)
-        save_text = save_font.render("Save", True, BUTTON_TEXT_COLOR)
-        save_text_rect = save_text.get_rect(center=self.save_button_rect.center)
-        self.window.blit(save_text, save_text_rect)
-
         pygame.display.flip()
 
 def update_gui(object: Block):
@@ -155,9 +140,11 @@ def pygame_thread_obj():
     print("pygame_thread_obj")
     pygame.display.init()
     game = Game()
+    gui_window.set_window(game)
     game.run()
 
 def main():
+    global gui_window
     gui_window = TkinterGui()
     global window
     window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
