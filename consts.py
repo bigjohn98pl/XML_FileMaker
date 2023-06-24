@@ -2,7 +2,9 @@ from typing import Literal, Tuple
 from typing import List
 from typing import Dict
 from typing import Optional
+from typing import Any
 import queue
+
 Color = Tuple[int, int, int]
 
 # Colors
@@ -24,9 +26,9 @@ MAP_COLOR = {
     "None"          : GRAY,
 }
 # Set up the window dimensions
-PY_WINDOW_WIDTH    = 600
+PY_WINDOW_WIDTH    = 800
 PY_WINDOW_HEIGHT   = 600
-GUI_WINDOW_WIDTH    = 1000
+GUI_WINDOW_WIDTH    = 1200
 GUI_WINDOW_HEIGHT   = 600
 # Button parameters
 BUTTON_WIDTH    = 100
@@ -49,6 +51,15 @@ OPTIONS_NUM = {
  } #etc
 SELECTED_OPTION = OPTIONS[0]
 
+BLOCK_PARAMETERS = [
+    "name",
+    "type",
+    "value",
+    "ident",
+    "title",
+    "func_name",
+    "variants",
+]
 BLOCK_SIZE = {
     "testcasegroup" : (200, 200),
     "testcase"      : (150, 50),
@@ -71,8 +82,8 @@ PADDING_ENTER_X = (0,5)
 PADDING_ENTER_Y = (5,0)
 MOUSE_POS = (0,0)
 # Create a queue for communication
-PY_QUEUE = queue.Queue(10)
-GUI_QUEUE = queue.Queue(10)
+PY_QUEUE :"queue.Queue[Dict[str, Any]]" = queue.Queue(10)
+GUI_QUEUE :"queue.Queue[Dict[str, Any]]"= queue.Queue(10)
 
 # Function to update the variables of the Game object
 def update_option(option):
