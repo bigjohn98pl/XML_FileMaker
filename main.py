@@ -34,8 +34,9 @@ class Game:
                             else:
                                 pass
                         elif pygame.mouse.get_pressed()[2]:
-                            # os.system('cls')
-                            print(f"{pygame.mouse.get_pos()}")
+                            for obj in self.objs:
+                                for param in obj.params:
+                                    print(f"{param}: {obj.params[param]}")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -66,12 +67,24 @@ class Game:
     def create_block(self, name, pos):
         try:
             if name in OPTIONS:
-                block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
+                block = Block(name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
+                if name in OPTIONS_NUM[0]:
+                    block.add_param(BLOCK_PARAMETERS[0],"Def_name")
+                    block.add_param(BLOCK_PARAMETERS[1],"Def_type")
+                    block.add_param(BLOCK_PARAMETERS[2],"Def_value")
+                if name in OPTIONS_NUM[1]:
+                    block.add_param(BLOCK_PARAMETERS[3],"Def_ident")
+                    block.add_param(BLOCK_PARAMETERS[4],"Def_title")
+                    block.add_param(BLOCK_PARAMETERS[5],"Def_func_name")
+                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
+                if name in OPTIONS_NUM[2]:
+                    block.add_param(BLOCK_PARAMETERS[4],"Def _title")
+                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
                 self.block_dict[block.id] = block
             else:
                 raise ValueError(f"Invalid block name {name}.")
 
-            block.add_param("pos",str(pos))
+            # block.add_param("pos",str(pos))
             self.active_obj = block
             self.active_obj.active = True
             self.objs.append(self.active_obj)
@@ -143,7 +156,6 @@ def main():
     gui_window = TkinterGui()
     global window
     window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
-    window.fill(BLACK)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
     pygame_thread.daemon = True
