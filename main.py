@@ -67,7 +67,7 @@ class Game:
     def create_block(self, name, pos):
         try:
             if name in OPTIONS:
-                block = Block(name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
+                block = Block(self.window,name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
                 if name in OPTIONS_NUM[0]:
                     block.add_param(BLOCK_PARAMETERS[0],"Def_name")
                     block.add_param(BLOCK_PARAMETERS[1],"Def_type")
