@@ -40,17 +40,83 @@ class Block:
 
     def render_parameter_text(self,key):
         try:
+            print("render_parameter_text")
             font_size: int = Block.font_size
             if key == "variants":
                 font_size = int(float(Block.font_size) * 0.8)
             text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
             text_surface =  text_parameter_value.render(self.params[key], True, BLACK, self.dim_color)
             text_rect  = text_surface.get_rect()
-            text_rect.center = self.rect.center
+            
+            if self.name == "parameter":
+                    if key == "name":
+                        text_rect.topleft = self.rect.topleft
+                    if key == "type":
+                        text_rect.topright = self.rect.topright
+                    if key == "value":
+                        text_rect.center = self.rect.center
 
+            if self.name == "testcase":
+                if key == "ident":
+                    text_rect.bottomleft = self.rect.topleft
+                if key == "title":
+                    text_rect.topleft = self.rect.topleft
+                if key == "func_name":
+                    text_rect.topleft = self.rect.topleft
+                    text_rect.y += text_rect.h
+                if key == "variants":
+                    text_rect.bottomright = self.rect.topright
+
+            if self.name == "testcasegroup":
+                if key == "title":
+                    text_rect.bottomleft = self.rect.topleft
+                if key == "variants":
+                    text_rect.bottomright = self.rect.topright
+            self.update_position(self.position)
             return (text_surface,text_rect,key)
         except:
+            self.update_position(self.position)
             return (self.surface,pygame.Rect(MOUSE_POS,(10,10)),key)
+            
+    def update_render_text(self,updated_key: str):
+        print("render_parameter_text")
+        font_size: int = Block.font_size
+        if updated_key == "variants":
+            font_size = int(float(Block.font_size) * 0.8)
+        text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
+        updated_text_surface =  text_parameter_value.render(self.params[updated_key], True, BLACK, self.dim_color)
+        updated_text_rect  = updated_text_surface.get_rect()
+        
+        if self.name == "parameter":
+            if updated_key == "name":
+                updated_text_rect.topleft = self.rect.topleft
+            if updated_key == "type":
+                updated_text_rect.topright = self.rect.topright
+            if updated_key == "value":
+                updated_text_rect.center = self.rect.center
+
+        if self.name == "testcase":
+            if updated_key == "ident":
+                updated_text_rect.bottomleft = self.rect.topleft
+            if updated_key == "title":
+                updated_text_rect.topleft = self.rect.topleft
+            if updated_key == "func_name":
+                updated_text_rect.topleft = self.rect.topleft
+                updated_text_rect.y += updated_text_rect.h
+            if updated_key == "variants":
+                updated_text_rect.bottomright = self.rect.topright
+
+        if self.name == "testcasegroup":
+            if updated_key == "title":
+                updated_text_rect.bottomleft = self.rect.topleft
+            if updated_key == "variants":
+                updated_text_rect.bottomright = self.rect.topright
+
+        upate_para = (updated_text_surface,updated_text_rect,updated_key)
+        for idx, para in enumerate(self.text_rects):
+            if para[2] == updated_key:
+                self.text_rects[idx] = upate_para
+                self.update_position(self.position)
 
     def add_child(self, child_block):
         if isinstance(child_block, Block):
