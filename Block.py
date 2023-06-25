@@ -28,6 +28,7 @@ class Block:
 
         self.children: List[Block] = []
         Block.count += 1
+        Block.count += 1
 
     def add_param(self, key, value):
         self.params[key] = value

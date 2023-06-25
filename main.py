@@ -4,6 +4,7 @@ import threading
 from Block import Block
 from consts import *
 from tkinter_gui import *
+
 class Game:
     def __init__(self):
         self.window: pygame.Surface = window
