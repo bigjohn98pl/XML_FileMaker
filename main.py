@@ -34,9 +34,7 @@ class Game:
                             else:
                                 pass
                         elif pygame.mouse.get_pressed()[2]:
-                            for obj in self.objs:
-                                for param in obj.params:
-                                    print(f"{param}: {obj.params[param]}")
+                            pass# print(*self.block_dict,sep="\n")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -108,7 +106,7 @@ class Game:
                 self.active_obj.press = False
                 for obj in self.objs:
                     if obj.rect.contains(self.active_obj.rect) and obj.id != self.active_obj.id:
-                        print(f"Add {self.active_obj.id} as a child to {obj.id}")
+                        # print(f"Add {self.active_obj.id} as a child to {obj.id}")
                         if len(obj.children) == 0:
                             obj.rect.h = TOP_MARGIN    
                         obj.add_child(self.block_dict[self.active_obj.id])
@@ -143,10 +141,32 @@ class Game:
 
         pygame.display.flip()
 
+def queue_event_handle(object):
+    try:
+        message = PY_QUEUE.get_nowait()
+        # Process the message as needed
+        if isinstance(message, dict) and "action" in message:
+            if message["action"] == "update_option":
+                object.selected_option = message["selected_option"]
+                # print(f"update_option: {message}")
+            if message["action"] == "update_block":
+                message.pop("action")
+                block = game.block_dict[message.pop("block")]
+                for param in message:
+                    block.params[param] = message[param]
+                    block.update_render_text(param)
+                # print(f"update_block: {message}")
+        # Handle other message types if needed
+    except queue.Empty:
+        pass
+    except queue.Full:
+        pass
+
 # Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
     pygame.display.init()
+    global game
     game = Game()
     gui_window.set_window(game)
     game.run()
