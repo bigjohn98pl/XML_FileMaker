@@ -35,8 +35,7 @@ class Game:
                             else:
                                 pass
                         elif pygame.mouse.get_pressed()[2]:
-                            # os.system('cls')
-                            print(f"{pygame.mouse.get_pos()}")
+                            pass# print(*self.block_dict,sep="\n")
                         
                 elif event.type == pygame.MOUSEBUTTONUP:    
                     if pygame.MOUSEBUTTONUP:
@@ -67,12 +66,24 @@ class Game:
     def create_block(self, name, pos):
         try:
             if name in OPTIONS:
-                block = Block(name,f"{name}_{Block.count+1}",pos,BLOCK_SIZE[name])
+                block = Block(self.window,name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
+                if name in OPTIONS_NUM[0]:
+                    block.add_param(BLOCK_PARAMETERS[0],"Def_name")
+                    block.add_param(BLOCK_PARAMETERS[1],"Def_type")
+                    block.add_param(BLOCK_PARAMETERS[2],"Def_value")
+                if name in OPTIONS_NUM[1]:
+                    block.add_param(BLOCK_PARAMETERS[3],"Def_ident")
+                    block.add_param(BLOCK_PARAMETERS[4],"Def_title")
+                    block.add_param(BLOCK_PARAMETERS[5],"Def_func_name")
+                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
+                if name in OPTIONS_NUM[2]:
+                    block.add_param(BLOCK_PARAMETERS[4],"Def _title")
+                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
                 self.block_dict[block.id] = block
             else:
                 raise ValueError(f"Invalid block name {name}.")
 
-            block.add_param("pos",str(pos))
+            # block.add_param("pos",str(pos))
             self.active_obj = block
             self.active_obj.active = True
             self.objs.append(self.active_obj)
@@ -96,7 +107,7 @@ class Game:
                 self.active_obj.press = False
                 for obj in self.objs:
                     if obj.rect.contains(self.active_obj.rect) and obj.id != self.active_obj.id:
-                        print(f"Add {self.active_obj.id} as a child to {obj.id}")
+                        # print(f"Add {self.active_obj.id} as a child to {obj.id}")
                         if len(obj.children) == 0:
                             obj.rect.h = TOP_MARGIN    
                         obj.add_child(self.block_dict[self.active_obj.id])
@@ -128,17 +139,35 @@ class Game:
 
         for obj in reversed(self.objs):
             obj.draw_on(self.window)
+
         pygame.display.flip()
 
-def update_gui(object: Block):
-    # Update the variables of the Game object here
-    GUI_QUEUE.put({"action": "update_gui", "id": object.id,"position": object.position})
-    print({object.id})
+def queue_event_handle(object):
+    try:
+        message = PY_QUEUE.get_nowait()
+        # Process the message as needed
+        if isinstance(message, dict) and "action" in message:
+            if message["action"] == "update_option":
+                object.selected_option = message["selected_option"]
+                # print(f"update_option: {message}")
+            if message["action"] == "update_block":
+                message.pop("action")
+                block = game.block_dict[message.pop("block")]
+                for param in message:
+                    block.params[param] = message[param]
+                    block.update_render_text(param)
+                # print(f"update_block: {message}")
+        # Handle other message types if needed
+    except queue.Empty:
+        pass
+    except queue.Full:
+        pass
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():
     print("pygame_thread_obj")
     pygame.display.init()
+    global game
     game = Game()
     gui_window.set_window(game)
     game.run()
@@ -148,7 +177,6 @@ def main():
     gui_window = TkinterGui()
     global window
     window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
-    window.fill(BLACK)
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
     pygame_thread.daemon = True
