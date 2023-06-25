@@ -89,18 +89,4 @@ GUI_QUEUE :"queue.Queue[Dict[str, Any]]"= queue.Queue(10)
 def update_option(option):
     # Update the variables of the Game object here
     PY_QUEUE.put({"action": "update_option", "selected_option": OPTIONS[option]})
-    print({OPTIONS[option]})
-
-def queue_event_handle(object):
-    try:
-        message = PY_QUEUE.get_nowait()
-        # Process the message as needed
-        if isinstance(message, dict) and "action" in message:
-            if message["action"] == "update_option":
-                object.selected_option = message["selected_option"]
-                print(f"queueue {message}")
-        # Handle other message types if needed
-    except queue.Empty:
-        pass
-    except queue.Full:
-        pass
+    # print({OPTIONS[option]})
