@@ -21,9 +21,7 @@ class Block:
         
 
         self.rect = pygame.Rect(position[0],position[1],size[0],size[1])
-
         self.text_rects: List[tuple[pygame.Surface,pygame.Rect,str]] = []
-
         self.params = {}
 
         self.children: List[Block] = []
@@ -138,7 +136,6 @@ class Block:
         # Update the position of the block
         self.position = new_position
         self.rect.topleft = self.position
-
         try:
             for text_surf,text_rect,key in self.text_rects:
                 if self.name == "parameter":
@@ -178,7 +175,7 @@ class Block:
             child.update_position(new_child_position)
             y_offset += child.rect.height + MARGIN  # Increment the offset for the next child block
         self.size = self.rect.size
-    
+
     def update_chldren_positions(self):
         child_position_offset = (self.position[0] - self.position[0], self.position[1] - self.position[1])
         y_offset = self.rect.top + TOP_MARGIN

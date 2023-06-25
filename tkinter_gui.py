@@ -19,6 +19,7 @@ class TkinterGui:
         self.embed = tk.Frame(self.container, width=PY_WINDOW_WIDTH, height=PY_WINDOW_HEIGHT,background="gray12")
         os.environ['SDL_WINDOWID'] = str(self.embed.winfo_id())
         os.environ['SDL_VIDEODRIVER'] = 'windib'
+        
         self.embed.grid(row=0, column=0, sticky="nsew")
         
         self.box = tk.Frame(self.container,width=600, height=GUI_WINDOW_HEIGHT, background="peach puff")
