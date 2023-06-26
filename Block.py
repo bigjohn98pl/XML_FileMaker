@@ -1,4 +1,5 @@
 from consts import *
+import xml.dom.minidom as MD
 import pygame
 import ast
 from typing import List
@@ -212,6 +213,17 @@ class Block:
         # Create a new font with the scaled font size
         scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
         return scaled_font
+    
+    def create_xml_element(self,doc: MD.Document, obj: 'Block'):
+        element = doc.createElement(obj.name)
+        for param in obj.params:
+            element.setAttribute(param, obj.params[param])
+
+        for child in obj.children:
+            child_element = self.create_xml_element(doc, child)
+            element.appendChild(child_element)
+
+        return element
     
     def get_count(self):
         return self.count

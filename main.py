@@ -53,9 +53,7 @@ class Game:
         doc.appendChild(module)
 
         for obj in self.objs:
-            obj_xml = doc.createElement(obj.name)
-            obj_xml.setAttribute("id",obj.id)
-            obj_xml.appendChild(doc.createTextNode(str(obj.params["pos"])))
+            obj_xml = obj.create_xml_element(doc, obj)
             module.appendChild(obj_xml)
         
         xml_str = doc.toprettyxml(indent="    ")
