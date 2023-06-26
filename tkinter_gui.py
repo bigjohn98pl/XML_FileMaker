@@ -10,6 +10,24 @@ class TkinterGui:
         self.window: Game
         self.root = tk.Tk()
         
+        # Create a menu bar
+        menu_bar = tk.Menu(self.root)
+        self.root.config(menu=menu_bar)
+
+        # Create a File menu
+        file_menu = tk.Menu(menu_bar, tearoff=False)
+        view_menu = tk.Menu(menu_bar, tearoff=False)
+        menu_bar.add_cascade(label="File", menu=file_menu)
+        file_menu.add_command(label="New", command=self.file_new)
+        file_menu.add_command(label="Open", command=self.file_open)
+        file_menu.add_command(label="Save", command=self.file_save)
+        file_menu.add_separator()
+        file_menu.add_command(label="Exit", command=self.exit_app)
+
+        menu_bar.add_cascade(label="View", menu=view_menu)
+        view_menu.add_command(label="Zoom in",command=self.view_zoom_in)
+        view_menu.add_command(label="Zoom out",command=self.view_zoom_out)
+
         self.container = tk.Frame(self.root,width=GUI_WINDOW_WIDTH, height=GUI_WINDOW_HEIGHT,background="gray12")
         self.container.grid(sticky="nsew")
 
@@ -51,9 +69,28 @@ class TkinterGui:
         self.button2 = self.set_button(parent=self.footer,option=1,_row=0,_col=1,_padx=(5,0),_pady=(5,5),_sticky="nsew")
         self.button3 = self.set_button(parent=self.footer,option=2,_row=0,_col=2,_padx=(5,0),_pady=(5,5),_sticky="nsew")
         
-        self.save_button = tk.Button(self.footer, text="Save", command=lambda: self.window.save_xml())
+        self.save_button = tk.Button(self.footer, text="Save", command=self.file_save)
         self.save_button.grid(row=0,column=4,padx=(0,5),pady=(5,5),sticky="nsew")
     
+    def file_new(self):
+        print("New File")
+
+    def file_open(self):
+        print("Open File")
+
+    def file_save(self):
+        print("Save File")
+        self.window.save_xml()
+
+    def view_zoom_in(self):
+        print("Zoom in")
+
+    def view_zoom_out(self):
+        print("Zoom out")
+
+    def exit_app(self):
+        self.root.destroy()
+
     def run_gui(self):
         self.root.after(100, self.process_message_queue)
         self.root.mainloop()
