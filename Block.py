@@ -1,4 +1,5 @@
 from consts import *
+import xml.dom.minidom as MD
 import pygame
 import ast
 from typing import List
@@ -21,11 +22,16 @@ class Block:
         
 
         self.rect = pygame.Rect(position[0],position[1],size[0],size[1])
+
+
         self.text_rects: List[tuple[pygame.Surface,pygame.Rect,str]] = []
+
+
         self.params = {}
 
         self.children: List[Block] = []
         Block.count += 1
+
 
     def add_param(self, key, value):
         self.params[key] = value
@@ -136,6 +142,7 @@ class Block:
         # Update the position of the block
         self.position = new_position
         self.rect.topleft = self.position
+
         try:
             for text_surf,text_rect,key in self.text_rects:
                 if self.name == "parameter":
@@ -170,6 +177,7 @@ class Block:
 
         # Update the position of child blocks relative to the new parent position
         y_offset = self.rect.top + TOP_MARGIN  # Start with an offset below the parent block
+
         for child in self.children:
             new_child_position = (self.position[0] + child_position_offset[0] + X_MARGIN, y_offset)
             child.update_position(new_child_position)
@@ -208,6 +216,17 @@ class Block:
         # Create a new font with the scaled font size
         scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
         return scaled_font
+    
+    def create_xml_element(self,doc: MD.Document, obj: 'Block'):
+        element = doc.createElement(obj.name)
+        for param in obj.params:
+            element.setAttribute(param, obj.params[param])
+
+        for child in obj.children:
+            child_element = self.create_xml_element(doc, child)
+            element.appendChild(child_element)
+
+        return element
     
     def get_count(self):
         return self.count
