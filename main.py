@@ -70,11 +70,12 @@ class Game:
 
         for name in OPTIONS:
             for idx,obj_xml in enumerate(module.findall(name)):
-                xy = idx * 30
-                block = Block(self.window,name,(20+xy,20+xy),BLOCK_SIZE[name])
-                self.block_dict[block.id] = block
+                pos = (idx * 30,idx * 30)
+                block = Block(self.window,name,pos,BLOCK_SIZE[name])
                 block.load_from_xml(self.window,obj_xml)
+                self.block_dict[block.id] = block
                 objects.append(block)
+                self.objs.sort()
 
         self.objs = objects
 
@@ -82,23 +83,9 @@ class Game:
         try:
             if name in OPTIONS:
                 block = Block(self.window,name,pos,BLOCK_SIZE[name])
-                if name in OPTIONS_NUM[0]:
-                    block.add_param(BLOCK_PARAMETERS[0],"Def_name")
-                    block.add_param(BLOCK_PARAMETERS[1],"Def_type")
-                    block.add_param(BLOCK_PARAMETERS[2],"Def_value")
-                if name in OPTIONS_NUM[1]:
-                    block.add_param(BLOCK_PARAMETERS[3],"Def_ident")
-                    block.add_param(BLOCK_PARAMETERS[4],"Def_title")
-                    block.add_param(BLOCK_PARAMETERS[5],"Def_func_name")
-                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
-                if name in OPTIONS_NUM[2]:
-                    block.add_param(BLOCK_PARAMETERS[4],"Def _title")
-                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
-                self.block_dict[block.id] = block
             else:
                 raise ValueError(f"Invalid block name {name}.")
-
-            # block.add_param("pos",str(pos))
+            self.block_dict[block.id] = block
             self.active_obj = block
             self.active_obj.active = True
             self.objs.append(self.active_obj)
@@ -109,7 +96,8 @@ class Game:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
-
+    def delete_block(self,block_id):
+        pass
     def update_objs(self): 
         MOUSE_POS = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()[0]  # Check if the left mouse button is pressed
@@ -152,9 +140,10 @@ class Game:
         if self.active_obj != None:
             self.active_obj.draw_on(self.window)
 
-        for obj in reversed(self.objs):
-            obj.draw_on(self.window)
-
+        if self.objs != None: 
+            for obj in reversed(self.objs):
+                obj.draw_on(self.window)
+                # pygame.display.update(obj.rect)
         pygame.display.flip()
 
 def queue_event_handle(object):

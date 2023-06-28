@@ -27,8 +27,19 @@ class Block:
 
         self.text_rects: List[tuple[pygame.Surface,pygame.Rect,str]] = []
 
-
         self.params = {}
+        if self.name in OPTIONS_NUM[0]:
+            self.add_param(BLOCK_PARAMETERS[0],"Def_name")
+            self.add_param(BLOCK_PARAMETERS[1],"Def_type")
+            self.add_param(BLOCK_PARAMETERS[2],"Def_value")
+        if self.name in OPTIONS_NUM[1]:
+            self.add_param(BLOCK_PARAMETERS[3],"Def_ident")
+            self.add_param(BLOCK_PARAMETERS[4],"Def_title")
+            self.add_param(BLOCK_PARAMETERS[0],"Def_func_name")
+            self.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
+        if self.name in OPTIONS_NUM[2]:
+            self.add_param(BLOCK_PARAMETERS[4],"Def _title")
+            self.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
 
         self.children: List[Block] = []
         Block.count += 1
@@ -41,7 +52,7 @@ class Block:
         except ValueError as e:
             print(f"Error: {str(e)}")
         except Exception as e:
-            print(f"An error occurred: {str(e)}")
+            print(f"An error occurred add_param(): {str(e)}")
 
     def render_parameter_text(self,key):
         try:
@@ -49,17 +60,20 @@ class Block:
             if key == "variants":
                 font_size = int(float(Block.font_size) * 0.8)
             text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
-            text_surface =  text_parameter_value.render(self.params[key], True, BLACK, self.dim_color)
+            if self.name == OPTIONS[1] and key == BLOCK_PARAMETERS[0]:
+                text_surface =  text_parameter_value.render(f"{self.params[key]}()", True, BLACK, self.dim_color)
+            else:
+                text_surface =  text_parameter_value.render(f"{self.params[key]}", True, BLACK, self.dim_color)
             text_rect  = text_surface.get_rect()
             
             self.text_positioning(self.name,key,text_rect)
 
-            self.update_position(self.position)
+            # self.update_position(self.position)
             return (text_surface,text_rect,key)
         except:
-            
-            self.update_position(self.position)
-            return (self.surface,pygame.Rect(MOUSE_POS,(10,10)),key)
+            print("render_parameter_text")
+            # self.update_position(self.position)
+            return (self.surface,pygame.Rect(MOUSE_POS,(200,10)),key)
             
     def update_render_text(self,updated_key: str):
         font_size: int = Block.font_size
@@ -126,7 +140,7 @@ class Block:
                     text_rect.bottomleft = self.rect.topleft
                 if key_parameter == BLOCK_PARAMETERS[4]:
                     text_rect.topleft = self.rect.topleft
-                if key_parameter == BLOCK_PARAMETERS[5]:
+                if key_parameter == BLOCK_PARAMETERS[0]:
                     text_rect.topleft = self.rect.topleft
                     text_rect.y += text_rect.h
                 if key_parameter == BLOCK_PARAMETERS[6]:
@@ -192,7 +206,8 @@ class Block:
         for para in xml_element.attrib.keys():
             self.add_param(para,xml_element.attrib[para])
         
-        self.add_param(BLOCK_PARAMETERS[2],xml_element.text)
+        if self.name == OPTIONS[0]:
+            self.add_param(BLOCK_PARAMETERS[2],xml_element.text)
 
         for child_element in xml_element:
             child = Block(surface,child_element.tag,self.position,BLOCK_SIZE[child_element.tag])
