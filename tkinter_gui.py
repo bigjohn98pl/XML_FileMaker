@@ -2,6 +2,7 @@ from consts import *
 import os
 import tkinter as tk
 from tkinter import ttk
+from tkinter import filedialog
 from Block import Block
 from main import Game
 class TkinterGui:
@@ -77,6 +78,9 @@ class TkinterGui:
 
     def file_open(self):
         print("Open File")
+        file_path = filedialog.askopenfilename( initialdir="/__PROGRAMOWANIE_PROJEKTY__/__PYTHON__/XML_BlockMaker",
+                                                filetypes=(("XML files", "*.xml"),("All files", "*.*")))
+        self.window.upload_xml(file_path)
 
     def file_save(self):
         print("Save File")
