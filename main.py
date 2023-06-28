@@ -1,5 +1,6 @@
 import pygame
 import xml.dom.minidom as MD
+import xml.etree.ElementTree as ET
 import threading
 from Block import Block
 from consts import *
@@ -47,9 +48,9 @@ class Game:
         pygame.quit()
 
     def save_xml(self):
-        # TODO: make a uploat_xml funcionality base on xml.etree.ElementTree (faster for upload?)
+        # TODO: make a upload_xml funcionality base on xml.etree.ElementTree (faster for upload?)
         doc = MD.Document()
-        module = doc.createElement("module")
+        module = doc.createElement("testmodule")
         doc.appendChild(module)
 
         for obj in self.objs:
@@ -61,10 +62,26 @@ class Game:
             f.write(xml_str)
         print("XML file saved!")
 
+    def upload_xml(self,xml_file):
+        tree = ET.parse(xml_file)
+        module = tree.getroot()
+        # self.active_obj = None
+        objects = []
+
+        for name in OPTIONS:
+            for idx,obj_xml in enumerate(module.findall(name)):
+                xy = idx * 30
+                block = Block(self.window,name,(20+xy,20+xy),BLOCK_SIZE[name])
+                self.block_dict[block.id] = block
+                block.load_from_xml(self.window,obj_xml)
+                objects.append(block)
+
+        self.objs = objects
+
     def create_block(self, name, pos):
         try:
             if name in OPTIONS:
-                block = Block(self.window,name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
+                block = Block(self.window,name,pos,BLOCK_SIZE[name])
                 if name in OPTIONS_NUM[0]:
                     block.add_param(BLOCK_PARAMETERS[0],"Def_name")
                     block.add_param(BLOCK_PARAMETERS[1],"Def_type")
