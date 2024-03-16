@@ -1,4 +1,4 @@
-# XML_BlockMaker
+# XML_FileMaker
 A tool for making a XML files that are hard to edit and maintain.
 
 ## functionalities to do:
