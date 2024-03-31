@@ -20,7 +20,7 @@ class Block:
         self.position = position
         self.size: tuple[int,int] = size[0] + Block.scale, size[1] + Block.scale
         self.color: Color     = MAP_COLOR[self.name] or WHITE
-        self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
+        self.dim_color: Color = (int(self.color[0]*DIM_FACTOR),int(self.color[1]*DIM_FACTOR),int(self.color[2]*DIM_FACTOR))
         
 
         self.rect = pygame.Rect(
@@ -196,8 +196,10 @@ class Block:
     #     return scaled_font
     
     def scale_block(self, scale_value):
-        self.rect.w += scale_value
-        self.rect.h += scale_value
+        # self.rect.w += scale_value
+        # self.rect.h += scale_value
+        self.rect.inflate_ip(scale_value, scale_value)
+        print(self.rect.size)
         for label in self.text_rects:
             self.update_render_text(label[2])
 

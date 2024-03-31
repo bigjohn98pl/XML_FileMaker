@@ -19,7 +19,7 @@ GREEN: Color       = (46, 184, 46)
 YELLOW: Color      = (255, 204, 102)
 PURPLE: Color      = (255, 0, 255)
 DIM_FACTOR = 0.85
-
+SCALE_FACTOR = 1.0
 # Set up the window dimensions
 PY_WINDOW_WIDTH    = 800
 PY_WINDOW_HEIGHT   = 600
@@ -54,9 +54,6 @@ BLOCK_PARAMETERS = [
     "func_name",#5
     "variants", #6
 ]
-
-# Track the zoom level
-SCALE_FACTOR = 1.0
 
 BLOCK_SIZE = {
     OPTIONS[0]      : (250, 20),

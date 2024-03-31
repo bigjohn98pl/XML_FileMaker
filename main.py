@@ -151,16 +151,20 @@ def queue_event_handle(object: Game):
         message = PY_QUEUE.get_nowait()
         # Process the message as needed
         if isinstance(message, dict) and "action" in message:
+
             if message["action"] == "update_option":
                 object.selected_option = message["selected_option"]
                 # print(f"update_option: {message}")
+            print(f"Message received: {message}")    
             if message["action"] == "update_block":
                 message.pop("action")
                 block = game.block_dict[message.pop("block")]
-                for param in message:
-                    block.params[param] = message[param]
+                while message:
+                    param, value = message.popitem()
+                    block.params[param] = value
                     block.update_render_text(param)
-            if message["action"] == "zoom":
+            print(f"Message received: {message}")
+            if "zoom" in message:
                 if message["zoom"] == "+":
                     Block.scale += int(10 * SCALE_FACTOR)
                     Block.font_size += 2
@@ -173,9 +177,9 @@ def queue_event_handle(object: Game):
                         obj.scale_block(-10)
         # Handle other message types if needed
     except queue.Empty:
-        pass
+        pass #print("Queue is empty")
     except queue.Full:
-        pass
+        print("Queue is full")
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():
@@ -188,8 +192,9 @@ def pygame_thread_obj():
 
 def main():
     global gui_window
-    gui_window = TkinterGui()
     global window
+
+    gui_window = TkinterGui()
     window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)
