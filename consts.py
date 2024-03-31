@@ -3,6 +3,7 @@ from typing import List
 from typing import Dict
 from typing import Optional
 from typing import Any
+from math import floor
 import queue
 
 Color = Tuple[int, int, int]
@@ -53,6 +54,10 @@ BLOCK_PARAMETERS = [
     "func_name",#5
     "variants", #6
 ]
+
+# Track the zoom level
+SCALE_FACTOR = 1.0
+
 BLOCK_SIZE = {
     OPTIONS[0]      : (250, 20),
     OPTIONS[1]      : (260, 30),

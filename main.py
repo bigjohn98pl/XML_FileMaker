@@ -146,7 +146,7 @@ class Game:
                 # pygame.display.update(obj.rect)
         pygame.display.flip()
 
-def queue_event_handle(object):
+def queue_event_handle(object: Game):
     try:
         message = PY_QUEUE.get_nowait()
         # Process the message as needed
@@ -160,7 +160,17 @@ def queue_event_handle(object):
                 for param in message:
                     block.params[param] = message[param]
                     block.update_render_text(param)
-                # print(f"update_block: {message}")
+            if message["action"] == "zoom":
+                if message["zoom"] == "+":
+                    Block.scale += int(10 * SCALE_FACTOR)
+                    Block.font_size += 2
+                    for obj in object.objs:
+                        obj.scale_block(10)
+                elif message["zoom"] == "-":
+                    Block.scale -= int(10 * SCALE_FACTOR)
+                    Block.font_size -= 2
+                    for obj in object.objs:
+                        obj.scale_block(-10)
         # Handle other message types if needed
     except queue.Empty:
         pass

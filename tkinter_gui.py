@@ -49,11 +49,12 @@ class TkinterGui:
         self.footer = tk.Frame(self.root,width=GUI_WINDOW_WIDTH, height=100, background="#f84018")
         self.footer.grid(row=1, column=0, columnspan=6, sticky="ew")
         # Configure grid weights for the footer frame
-        self.footer.grid_columnconfigure(0, weight=1)
-        self.footer.grid_columnconfigure(1, weight=1)
-        self.footer.grid_columnconfigure(2, weight=1)
-        self.footer.grid_columnconfigure(3, weight=1)
-        self.footer.grid_columnconfigure(4, weight=2)
+        self.footer.grid_columnconfigure(0, weight=10)
+        self.footer.grid_columnconfigure(1, weight=10)
+        self.footer.grid_columnconfigure(2, weight=10)
+        self.footer.grid_columnconfigure(3, weight=5)
+        self.footer.grid_columnconfigure(4, weight=5)
+        self.footer.grid_columnconfigure(5, weight=15)
         self.widgets: Dict[str,tuple[tk.Label,ttk.Entry]] = {}
 
         self.block_id = tk.Label(self.box,text="Block ID: ",relief="groove")
@@ -69,10 +70,26 @@ class TkinterGui:
         self.button1 = self.set_button(parent=self.footer,option=0,_row=0,_col=0,_padx=(5,0),_pady=(5,5),_sticky="nsew")
         self.button2 = self.set_button(parent=self.footer,option=1,_row=0,_col=1,_padx=(5,0),_pady=(5,5),_sticky="nsew")
         self.button3 = self.set_button(parent=self.footer,option=2,_row=0,_col=2,_padx=(5,0),_pady=(5,5),_sticky="nsew")
+
+        self.button_zoom_in = tk.Button(self.footer, text="+", command=self.zoom_in)
+        self.button_zoom_in.grid(row=0,column=3,padx=(5,0),pady=5,sticky="nsew")
+        self.button_zoom_out =  tk.Button(self.footer, text="-", command=self.zoom_out)
+        self.button_zoom_out.grid(row=0,column=4,padx=(5,0),pady=5,sticky="nsew")
         
         self.save_button = tk.Button(self.footer, text="Save", command=self.file_save)
-        self.save_button.grid(row=0,column=4,padx=(0,5),pady=(5,5),sticky="nsew")
+        self.save_button.grid(row=0,column=5,padx=(5,5),pady=(5,5),sticky="nsew")
     
+    def zoom_in(self):
+        print("zoom in")
+        PY_QUEUE.put({"action": "zoom","zoom":"+"})
+        print(Block.scale)
+        print(Block.font_size)
+    def zoom_out(self):
+        print("zoom out")
+        print(Block.scale)
+        print(Block.font_size)
+        PY_QUEUE.put({"action": "zoom","zoom":"-"})
+
     def file_new(self):
         print("New File")
 
@@ -184,10 +201,10 @@ def update_gui(object: Block):
     for param in object.params:
         item[param] = object.params[param]
     GUI_QUEUE.put(item)
-    print({object.id})
+    # print({object.id})
 
 # Function to update the variables of the Block object
 def update_block(block_id,parameter,new_value):
     # Update the variables of the Game object here
     PY_QUEUE.put({"action": "update_block","block": block_id, parameter: new_value})
-    print(f"update_block: {block_id} {parameter} {new_value}")
+    # print(f"update_block: {block_id} {parameter} {new_value}")

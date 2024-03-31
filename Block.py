@@ -8,6 +8,7 @@ pygame.font.init()
 class Block:
     count: int = 0  # Class variable to keep track of the block count
     font_size: int = 10
+    scale: int = 0
     def __init__(self,surface: pygame.Surface, name: str, position: tuple[int,int],size: tuple[int,int]):
         self.surface = surface
         self.number: int = Block.count
@@ -17,13 +18,17 @@ class Block:
         self.press = False
         self.active = False
         self.position = position
-        self.size: tuple[int,int] = size
+        self.size: tuple[int,int] = size[0] + Block.scale, size[1] + Block.scale
         self.color: Color     = MAP_COLOR[self.name] or WHITE
         self.dim_color: Color = tuple(int(component * DIM_FACTOR) for component in self.color)
         
 
-        self.rect = pygame.Rect(position[0],position[1],size[0],size[1])
-
+        self.rect = pygame.Rect(
+            self.position[0],
+            self.position[1],
+            self.size[0],
+            self.size[1]
+            )
 
         self.text_rects: List[tuple[pygame.Surface,pygame.Rect,str]] = []
 
@@ -55,31 +60,30 @@ class Block:
             print(f"An error occurred add_param(): {str(e)}")
 
     def render_parameter_text(self,key):
-        try:
-            font_size: int = Block.font_size
-            if key == "variants":
-                font_size = int(float(Block.font_size) * 0.8)
-            text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
-            if self.name == OPTIONS[1] and key == BLOCK_PARAMETERS[0]:
-                text_surface =  text_parameter_value.render(f"{self.params[key]}()", True, BLACK, self.dim_color)
-            else:
-                text_surface =  text_parameter_value.render(f"{self.params[key]}", True, BLACK, self.dim_color)
-            text_rect  = text_surface.get_rect()
-            
-            self.text_positioning(self.name,key,text_rect)
+        # Block.font_size += 1
+        # if key == "variants":
+        #     Block.font_size = int(float(Block.font_size) * 0.8)
+        text_parameter_value = pygame.font.Font('freesansbold.ttf', Block.font_size)
+        if self.name == OPTIONS[1] and key == BLOCK_PARAMETERS[0]:
+            text_surface =  text_parameter_value.render(f"{self.params[key]}()", True, BLACK, self.dim_color)
+        else:
+            text_surface =  text_parameter_value.render(f"{self.params[key]}", True, BLACK, self.dim_color)
+        text_rect  = text_surface.get_rect()
+        
+        self.text_positioning(self.name,key,text_rect)
 
-            # self.update_position(self.position)
-            return (text_surface,text_rect,key)
-        except:
-            print("render_parameter_text")
-            # self.update_position(self.position)
-            return (self.surface,pygame.Rect(MOUSE_POS,(200,10)),key)
+        # self.update_position(self.position)
+        return (text_surface,text_rect,key)
+        # except:
+        #     print("render_parameter_text")
+        #     # self.update_position(self.position)
+        #     return (self.surface,pygame.Rect(MOUSE_POS,(200,10)),key)
             
     def update_render_text(self,updated_key: str):
-        font_size: int = Block.font_size
-        if updated_key == "variants":
-            font_size = int(float(Block.font_size) * 0.8)
-        text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
+        # Block.font_size += Block.scale
+        # if updated_key == "variants":
+        #     Block.font_size = int(floor(Block.font_size) * 0.8)
+        text_parameter_value = pygame.font.Font('freesansbold.ttf', Block.font_size)
         updated_text_surface =  text_parameter_value.render(self.params[updated_key], True, BLACK, self.dim_color)
         updated_text_rect  = updated_text_surface.get_rect()
         
@@ -178,19 +182,28 @@ class Block:
         for child in self.children:
             child.draw_on(screen)
 
-    def scale_font_size(self, rect: pygame.Rect, reference_size) -> pygame.font.Font:
-        # Calculate the scaling factor based on the width and height ratios
-        # width_ratio =  rect.width / Block.font_size
-        # height_ratio = rect.height / Block.font_size
-        # scaling_factor = min(width_ratio, height_ratio)
+    # def scale_font_size(self, rect: pygame.Rect, reference_size) -> pygame.font.Font:
+    #     # Calculate the scaling factor based on the width and height ratios
+    #     # width_ratio =  rect.width / Block.font_size
+    #     # height_ratio = rect.height / Block.font_size
+    #     # scaling_factor = min(width_ratio, height_ratio)
 
-        # Scale the font size based on the scaling factor
-        # scaled_font_size = int(Block.font_size * scaling_factor)
+    #     # Scale the font size based on the scaling factor
+    #     # scaled_font_size = int(Block.font_size * scaling_factor)
 
-        # Create a new font with the scaled font size
-        scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
-        return scaled_font
+    #     # Create a new font with the scaled font size
+    #     scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
+    #     return scaled_font
     
+    def scale_block(self, scale_value):
+        self.rect.w += scale_value
+        self.rect.h += scale_value
+        for label in self.text_rects:
+            self.update_render_text(label[2])
+
+        for child in self.children:
+            child.scale_block(scale_value)
+
     def create_xml_element(self,doc: MD.Document, obj: 'Block'):
         element = doc.createElement(obj.name)
         for param in obj.params:
