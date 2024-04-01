@@ -1,5 +1,6 @@
 import pygame
 import xml.dom.minidom as MD
+import xml.etree.ElementTree as ET
 import threading
 from Block import Block
 from consts import *
@@ -41,15 +42,23 @@ class Game:
                     if pygame.MOUSEBUTTONUP:
                         pass
 
+                elif event.type == pygame.MOUSEWHEEL:
+                    if event.y > 0:
+                        print("Scrolled up")
+                        self.scale_all_elements(-10,-1)
+                    elif event.y < 0:
+                        print("Scrolled down")
+                        self.scale_all_elements(10,1)
+
             self.update_objs()
             self.draw_window()
 
         pygame.quit()
 
     def save_xml(self):
-        # TODO: make a uploat_xml funcionality base on xml.etree.ElementTree (faster for upload?)
+        # TODO: make a upload_xml funcionality base on xml.etree.ElementTree (faster for upload?)
         doc = MD.Document()
-        module = doc.createElement("module")
+        module = doc.createElement("testmodule")
         doc.appendChild(module)
 
         for obj in self.objs:
@@ -61,27 +70,30 @@ class Game:
             f.write(xml_str)
         print("XML file saved!")
 
+    def upload_xml(self,xml_file):
+        tree = ET.parse(xml_file)
+        module = tree.getroot()
+        # self.active_obj = None
+        objects = []
+
+        for name in OPTIONS:
+            for idx,obj_xml in enumerate(module.findall(name)):
+                pos = (idx * 30,idx * 30)
+                block = Block(self.window,name,pos,BLOCK_SIZE[name])
+                block.load_from_xml(self.window,obj_xml)
+                self.block_dict[block.id] = block
+                objects.append(block)
+                self.objs.sort()
+
+        self.objs = objects
+
     def create_block(self, name, pos):
         try:
             if name in OPTIONS:
-                block = Block(self.window,name,f"{name}_{Block.count}",pos,BLOCK_SIZE[name])
-                if name in OPTIONS_NUM[0]:
-                    block.add_param(BLOCK_PARAMETERS[0],"Def_name")
-                    block.add_param(BLOCK_PARAMETERS[1],"Def_type")
-                    block.add_param(BLOCK_PARAMETERS[2],"Def_value")
-                if name in OPTIONS_NUM[1]:
-                    block.add_param(BLOCK_PARAMETERS[3],"Def_ident")
-                    block.add_param(BLOCK_PARAMETERS[4],"Def_title")
-                    block.add_param(BLOCK_PARAMETERS[5],"Def_func_name")
-                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
-                if name in OPTIONS_NUM[2]:
-                    block.add_param(BLOCK_PARAMETERS[4],"Def _title")
-                    block.add_param(BLOCK_PARAMETERS[6],"Def _var1 _var2")
-                self.block_dict[block.id] = block
+                block = Block(self.window,name,pos,BLOCK_SIZE[name])
             else:
                 raise ValueError(f"Invalid block name {name}.")
-
-            # block.add_param("pos",str(pos))
+            self.block_dict[block.id] = block
             self.active_obj = block
             self.active_obj.active = True
             self.objs.append(self.active_obj)
@@ -92,7 +104,8 @@ class Game:
         except Exception as e:
             print(f"An error occurred: {str(e)}")
 
-
+    def delete_block(self,block_id):
+        pass
     def update_objs(self): 
         MOUSE_POS = pygame.mouse.get_pos()
         mouse_pressed = pygame.mouse.get_pressed()[0]  # Check if the left mouse button is pressed
@@ -135,31 +148,46 @@ class Game:
         if self.active_obj != None:
             self.active_obj.draw_on(self.window)
 
-        for obj in reversed(self.objs):
-            obj.draw_on(self.window)
-
+        if self.objs != None: 
+            for obj in reversed(self.objs):
+                obj.draw_on(self.window)
+                # pygame.display.update(obj.rect)
         pygame.display.flip()
 
-def queue_event_handle(object):
+    def scale_all_elements(self, scale_value, font_scale):
+        Block.scale += scale_value
+        Block.font_size += font_scale
+            
+        for obj in self.objs:
+            obj.scale_block(scale_value,Block.font_size)
+
+def queue_event_handle(object: Game):
     try:
         message = PY_QUEUE.get_nowait()
         # Process the message as needed
         if isinstance(message, dict) and "action" in message:
+
             if message["action"] == "update_option":
                 object.selected_option = message["selected_option"]
-                # print(f"update_option: {message}")
+
             if message["action"] == "update_block":
                 message.pop("action")
                 block = game.block_dict[message.pop("block")]
-                for param in message:
-                    block.params[param] = message[param]
-                    block.update_render_text(param)
-                # print(f"update_block: {message}")
+                while message:
+                    param, value = message.popitem()
+                    block.params[param] = value
+                    block.update_render_text(param,Block.font_size)
+
+            if "zoom" in message:
+                if message["zoom"] == "+":
+                    object.scale_all_elements(10,1)
+                elif message["zoom"] == "-":
+                    object.scale_all_elements(-10,-1)
         # Handle other message types if needed
     except queue.Empty:
-        pass
+        pass #print("Queue is empty")
     except queue.Full:
-        pass
+        print("Queue is full")
 
 # Function to run the game in a separate thread
 def pygame_thread_obj():
@@ -172,8 +200,9 @@ def pygame_thread_obj():
 
 def main():
     global gui_window
-    gui_window = TkinterGui()
     global window
+
+    gui_window = TkinterGui()
     window = pygame.display.set_mode((PY_WINDOW_WIDTH, PY_WINDOW_HEIGHT))
 
     pygame_thread = threading.Thread(target=pygame_thread_obj)

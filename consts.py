@@ -3,6 +3,7 @@ from typing import List
 from typing import Dict
 from typing import Optional
 from typing import Any
+from math import floor
 import queue
 
 Color = Tuple[int, int, int]
@@ -18,13 +19,7 @@ GREEN: Color       = (46, 184, 46)
 YELLOW: Color      = (255, 204, 102)
 PURPLE: Color      = (255, 0, 255)
 DIM_FACTOR = 0.85
-
-MAP_COLOR = {
-    "testcasegroup" : YELLOW,
-    "testcase"      : RED_LIGHT,
-    "parameter"     : BLUE,
-    "None"          : GRAY,
-}
+# SCALE_FACTOR = 1.0
 # Set up the window dimensions
 PY_WINDOW_WIDTH    = 800
 PY_WINDOW_HEIGHT   = 600
@@ -38,45 +33,43 @@ BUTTON_TEXT_COLOR = WHITE
 
 # Options for tk window
 OPTIONS = [
-    "parameter",
-    "testcase",
-    "testcasegroup",
-    "None",
+    "caplparam",
+    "capltestcase",
+    "testgroup",
+    # "testmodule",
+    # "None",
     ] #etc
-OPTIONS_NUM = {
-    0 : OPTIONS[0],
-    1 : OPTIONS[1],
-    2 : OPTIONS[2],
-    3 : OPTIONS[3],
- } #etc
+
 SELECTED_OPTION = OPTIONS[0]
+OPTIONS_NUM = {}
+for idx,option in enumerate(OPTIONS):
+    OPTIONS_NUM[idx] = OPTIONS[idx]
 
 BLOCK_PARAMETERS = [
-    "name",
-    "type",
-    "value",
-    "ident",
-    "title",
-    "func_name",
-    "variants",
+    "name",     #0
+    "type",     #1
+    "value",    #2
+    "ident",    #3
+    "title",    #4
+    "func_name",#5
+    "variants", #6
 ]
-BLOCK_SIZE = {
-    "testcasegroup" : (200, 200),
-    "testcase"      : (150, 50),
-    "parameter"     : (120, 40),
-    "None"          : (1,1),
+
+BLOCK_SIZE: dict[str, tuple[int,int]] = {
+    OPTIONS[0]      : (250, 20),
+    OPTIONS[1]      : (260, 30),
+    OPTIONS[2]      : (270, 40)
+    # OPTIONS[4]      : (1,1),
 }
-MAP_NAME = {
-    "testcasegroup" : 2,
-    "testcase"      : 1,
-    "parameter"     : 0,
-    "None"          : 3,
-}
+MAP_NAME = {}
+for idx,option in enumerate(OPTIONS):
+    MAP_NAME[option] = idx
+
 MAP_COLOR = {
-    "testcasegroup" : YELLOW,
-    "testcase"      : RED_LIGHT,
-    "parameter"     : BLUE,
-    "None"          : GRAY,
+    OPTIONS[0]  : BLUE,
+    OPTIONS[1]  : RED_LIGHT,
+    OPTIONS[2]  : YELLOW,
+    # OPTIONS[4]  : GRAY,
 }
 
 MARGIN :int = 10
