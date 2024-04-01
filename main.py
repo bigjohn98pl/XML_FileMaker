@@ -167,12 +167,12 @@ def queue_event_handle(object: Game):
             if "zoom" in message:
                 if message["zoom"] == "+":
                     Block.scale += int(10 * SCALE_FACTOR)
-                    Block.font_size += 2
+                    Block.font_size += 1
                     for obj in object.objs:
                         obj.scale_block(10)
                 elif message["zoom"] == "-":
                     Block.scale -= int(10 * SCALE_FACTOR)
-                    Block.font_size -= 2
+                    Block.font_size -= 1
                     for obj in object.objs:
                         obj.scale_block(-10)
         # Handle other message types if needed

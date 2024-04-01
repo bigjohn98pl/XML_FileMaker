@@ -60,7 +60,6 @@ class Block:
             print(f"An error occurred add_param(): {str(e)}")
 
     def render_parameter_text(self,key):
-        # Block.font_size += 1
         # if key == "variants":
         #     Block.font_size = int(float(Block.font_size) * 0.8)
         text_parameter_value = pygame.font.Font('freesansbold.ttf', Block.font_size)
@@ -72,15 +71,9 @@ class Block:
         
         self.text_positioning(self.name,key,text_rect)
 
-        # self.update_position(self.position)
         return (text_surface,text_rect,key)
-        # except:
-        #     print("render_parameter_text")
-        #     # self.update_position(self.position)
-        #     return (self.surface,pygame.Rect(MOUSE_POS,(200,10)),key)
             
     def update_render_text(self,updated_key: str):
-        # Block.font_size += Block.scale
         # if updated_key == "variants":
         #     Block.font_size = int(floor(Block.font_size) * 0.8)
         text_parameter_value = pygame.font.Font('freesansbold.ttf', Block.font_size)
@@ -182,22 +175,8 @@ class Block:
         for child in self.children:
             child.draw_on(screen)
 
-    # def scale_font_size(self, rect: pygame.Rect, reference_size) -> pygame.font.Font:
-    #     # Calculate the scaling factor based on the width and height ratios
-    #     # width_ratio =  rect.width / Block.font_size
-    #     # height_ratio = rect.height / Block.font_size
-    #     # scaling_factor = min(width_ratio, height_ratio)
-
-    #     # Scale the font size based on the scaling factor
-    #     # scaled_font_size = int(Block.font_size * scaling_factor)
-
-    #     # Create a new font with the scaled font size
-    #     scaled_font = pygame.font.Font('freesansbold.ttf', Block.font_size)
-    #     return scaled_font
-    
     def scale_block(self, scale_value):
-        # self.rect.w += scale_value
-        # self.rect.h += scale_value
+
         self.rect.inflate_ip(scale_value, scale_value)
         print(self.rect.size)
         for label in self.text_rects:
