@@ -169,8 +169,7 @@ def queue_event_handle(object: Game):
 
             if message["action"] == "update_option":
                 object.selected_option = message["selected_option"]
-                # print(f"update_option: {message}")
-            print(f"Message received: {message}")    
+
             if message["action"] == "update_block":
                 message.pop("action")
                 block = game.block_dict[message.pop("block")]
@@ -178,7 +177,7 @@ def queue_event_handle(object: Game):
                     param, value = message.popitem()
                     block.params[param] = value
                     block.update_render_text(param,Block.font_size)
-            print(f"Message received: {message}")
+
             if "zoom" in message:
                 if message["zoom"] == "+":
                     object.scale_all_elements(10,1)

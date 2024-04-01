@@ -82,16 +82,13 @@ class TkinterGui:
     def zoom_in(self):
         print("zoom in")
         PY_QUEUE.put({"action": "zoom","zoom":"+"})
-        print(Block.scale)
-        print(Block.font_size)
     def zoom_out(self):
         print("zoom out")
-        print(Block.scale)
-        print(Block.font_size)
         PY_QUEUE.put({"action": "zoom","zoom":"-"})
 
     def file_new(self):
-        print("New File")
+        # TODO: implement manager for set up a new file (choose block types, sizes, colors, etc.)
+        pass
 
     def file_open(self):
         print("Open File")
@@ -105,9 +102,11 @@ class TkinterGui:
 
     def view_zoom_in(self):
         print("Zoom in")
+        PY_QUEUE.put({"action": "zoom","zoom":"+"})
 
     def view_zoom_out(self):
         print("Zoom out")
+        PY_QUEUE.put({"action": "zoom","zoom":"-"})
 
     def exit_app(self):
         self.root.destroy()
