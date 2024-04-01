@@ -73,10 +73,10 @@ class Block:
 
         return (text_surface,text_rect,key)
             
-    def update_render_text(self,updated_key: str):
+    def update_render_text(self,updated_key: str, font_size: int):
         # if updated_key == "variants":
         #     Block.font_size = int(floor(Block.font_size) * 0.8)
-        text_parameter_value = pygame.font.Font('freesansbold.ttf', Block.font_size)
+        text_parameter_value = pygame.font.Font('freesansbold.ttf', font_size)
         updated_text_surface =  text_parameter_value.render(self.params[updated_key], True, BLACK, self.dim_color)
         updated_text_rect  = updated_text_surface.get_rect()
         
@@ -175,15 +175,15 @@ class Block:
         for child in self.children:
             child.draw_on(screen)
 
-    def scale_block(self, scale_value):
+    def scale_block(self, scale_value_block: int, scale_value_font: int):
 
-        self.rect.inflate_ip(scale_value, scale_value)
+        self.rect.inflate_ip(scale_value_block, scale_value_block)
         print(self.rect.size)
         for label in self.text_rects:
-            self.update_render_text(label[2])
+            self.update_render_text(label[2], scale_value_font)
 
         for child in self.children:
-            child.scale_block(scale_value)
+            child.scale_block(scale_value_block, scale_value_font)
 
     def create_xml_element(self,doc: MD.Document, obj: 'Block'):
         element = doc.createElement(obj.name)

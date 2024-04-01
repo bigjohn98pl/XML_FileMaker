@@ -19,7 +19,7 @@ GREEN: Color       = (46, 184, 46)
 YELLOW: Color      = (255, 204, 102)
 PURPLE: Color      = (255, 0, 255)
 DIM_FACTOR = 0.85
-SCALE_FACTOR = 1.0
+# SCALE_FACTOR = 1.0
 # Set up the window dimensions
 PY_WINDOW_WIDTH    = 800
 PY_WINDOW_HEIGHT   = 600
@@ -55,10 +55,10 @@ BLOCK_PARAMETERS = [
     "variants", #6
 ]
 
-BLOCK_SIZE = {
+BLOCK_SIZE: dict[str, tuple[int,int]] = {
     OPTIONS[0]      : (250, 20),
     OPTIONS[1]      : (260, 30),
-    OPTIONS[2]      : (270, 40),
+    OPTIONS[2]      : (270, 40)
     # OPTIONS[4]      : (1,1),
 }
 MAP_NAME = {}

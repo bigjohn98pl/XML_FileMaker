@@ -42,6 +42,14 @@ class Game:
                     if pygame.MOUSEBUTTONUP:
                         pass
 
+                elif event.type == pygame.MOUSEWHEEL:
+                    if event.y > 0:
+                        print("Scrolled up")
+                        self.scale_all_elements(-10,-1)
+                    elif event.y < 0:
+                        print("Scrolled down")
+                        self.scale_all_elements(10,1)
+
             self.update_objs()
             self.draw_window()
 
@@ -146,6 +154,13 @@ class Game:
                 # pygame.display.update(obj.rect)
         pygame.display.flip()
 
+    def scale_all_elements(self, scale_value, font_scale):
+        Block.scale += scale_value
+        Block.font_size += font_scale
+            
+        for obj in self.objs:
+            obj.scale_block(scale_value,Block.font_size)
+
 def queue_event_handle(object: Game):
     try:
         message = PY_QUEUE.get_nowait()
@@ -162,19 +177,13 @@ def queue_event_handle(object: Game):
                 while message:
                     param, value = message.popitem()
                     block.params[param] = value
-                    block.update_render_text(param)
+                    block.update_render_text(param,Block.font_size)
             print(f"Message received: {message}")
             if "zoom" in message:
                 if message["zoom"] == "+":
-                    Block.scale += int(10 * SCALE_FACTOR)
-                    Block.font_size += 1
-                    for obj in object.objs:
-                        obj.scale_block(10)
+                    object.scale_all_elements(10,1)
                 elif message["zoom"] == "-":
-                    Block.scale -= int(10 * SCALE_FACTOR)
-                    Block.font_size -= 1
-                    for obj in object.objs:
-                        obj.scale_block(-10)
+                    object.scale_all_elements(-10,-1)
         # Handle other message types if needed
     except queue.Empty:
         pass #print("Queue is empty")
